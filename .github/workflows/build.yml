@@ -1,0 +1,33 @@
+name: Space dude
+
+on: push
+
+jobs:
+  build-engine:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: 'Game'
+
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+        repository: 'Golle/TitanEngine'
+        path: 'TitanEngine'
+    
+    - name: Install .NET 7.0.x
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Build
+      run: dotnet build -c Release
+      working-directory: Game
+    
+    - name: Test
+      run: dotnet test -c Release
+      working-directory: Game
+
+    

@@ -1,4 +1,5 @@
 using Space;
+using Space.Assets;
 using Titan;
 using Titan.Assets;
 using Titan.Core.Logging;
@@ -11,7 +12,7 @@ using Titan.Sound;
 #if DEBUG
 using var _ = Logger.Start<ConsoleLogger>(10_000);
 
-var devAssetFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../assets");
+var devAssetFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../assets");
 var devPakFolder = Path.Combine(devAssetFolder, "bin");
 var devEngineFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../../TitanEngine/");
 var devConfig = new AssetsDevConfiguration(devAssetFolder, devPakFolder, devEngineFolder);
@@ -23,6 +24,7 @@ using var _ = Logger.Start(new FileLogger(Path.GetFullPath("logs", AppContext.Ba
 App.Create(new AppCreationArgs())
 #if DEBUG
     .AddConfig(devConfig)
+    
 #endif
     .AddModule<GraphicsModule>()
     .AddModule<InputModule>()
@@ -30,14 +32,17 @@ App.Create(new AppCreationArgs())
     .AddModule<GameModule>()
     .AddConfig(GraphicsConfig.Default with
     {
+        Debug = true,
         Vsync = true,
         AllowTearing = false
     })
     .AddConfig(WindowConfig.Default with
     {
         Title = "Space Invaders on Titan",
-        Windowed = true
+        Windowed = true,
+        //AlwaysOnTop = true
     })
+    
     .UseRunner<WindowedRunner>()
     .Build()
     .Run()

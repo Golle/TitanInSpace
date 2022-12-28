@@ -1,3 +1,4 @@
+using Space.Assets;
 using Space.Game;
 using Space.Player;
 using Titan.ECS.Components;
@@ -15,6 +16,8 @@ internal struct GameModule : IModule
             .AddSystem<PlayerSystem>()
             .AddSystem<GameStartupSystem>()
             .AddResource(new GameState { CurrentState = GameStateTypes.Startup })
+            
+            .AddAssetsManifest<AssetRegistry.Manifest>()
             ;
 
         return true;

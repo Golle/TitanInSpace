@@ -10,14 +10,14 @@ namespace Space.Player;
 internal struct PlayerSystem : ISystem
 {
     private MutableStorage<Transform2D> _transform;
-    private ReadOnlyStorage<PlayerComponent> _player;
+    private MutableStorage<PlayerComponent> _player;
     private InputManager _input;
     private EntityQuery _query;
 
     public void Init(in SystemInitializer init)
     {
         _transform = init.GetMutableStorage<Transform2D>();
-        _player = init.GetReadOnlyStorage<PlayerComponent>();
+        _player = init.GetMutableStorage<PlayerComponent>();
         _input = init.GetInputManager();
         _query = init.CreateQuery(new EntityQueryArgs().With<PlayerComponent>().With<Transform2D>());
     }
@@ -25,29 +25,41 @@ internal struct PlayerSystem : ISystem
     public void Update()
     {
         ref readonly var playerEntity = ref _query[0];
-        ref readonly var player = ref _player.Get(playerEntity);
-        if (_input.IsKeyDown(KeyCode.Up))
+        ref var player = ref _player.Get(playerEntity);
+        player.IsMoving = false;
+        var length = Math.Clamp(player.ElapsedTimeMoving / 0.5f, 0f, 1f);
+        var speed = Easings.EaseInCubic(length) * player.MaxSpeed + player.StartSpeed;
+        if (_input.IsKeyDown(KeyCode.Up) || _input.IsKeyDown(KeyCode.W))
         {
-            _transform[playerEntity].Position.Y += player.CurrentSpeed;
-            Logger.Trace<PlayerSystem>($"Moving up {_transform[playerEntity].Position}");
+            _transform[playerEntity].Position.Y += speed;
+            player.IsMoving = true;
         }
 
-        if (_input.IsKeyDown(KeyCode.Down))
+        if (_input.IsKeyDown(KeyCode.Down) || _input.IsKeyDown(KeyCode.S))
         {
-            _transform[playerEntity].Position.Y -= player.CurrentSpeed;
-            Logger.Trace<PlayerSystem>($"Moving down {_transform[playerEntity].Position}");
+            _transform[playerEntity].Position.Y -= speed;
+            player.IsMoving = true;
         }
-        
-        if (_input.IsKeyDown(KeyCode.Right))
+
+        if (_input.IsKeyDown(KeyCode.Right) || _input.IsKeyDown(KeyCode.D))
         {
-            _transform[playerEntity].Position.X += player.CurrentSpeed;
-            Logger.Trace<PlayerSystem>($"Moving right {_transform[playerEntity].Position}");
+            _transform[playerEntity].Position.X += speed;
+            player.IsMoving = true;
         }
-        
-        if (_input.IsKeyDown(KeyCode.Left))
+
+        if (_input.IsKeyDown(KeyCode.Left) || _input.IsKeyDown(KeyCode.A))
         {
-            _transform[playerEntity].Position.X -= player.CurrentSpeed;
-            Logger.Trace<PlayerSystem>($"Moving left {_transform[playerEntity].Position}");
+            _transform[playerEntity].Position.X -= speed;
+            player.IsMoving = true;
+        }
+
+        if (player.IsMoving)
+        {
+            player.ElapsedTimeMoving += 0.008f;
+        }
+        else
+        {
+            player.ElapsedTimeMoving = 0;
         }
     }
 

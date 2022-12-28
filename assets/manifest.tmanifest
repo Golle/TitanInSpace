@@ -1,0 +1,25 @@
+{
+  "order": 0,
+  "name": "Manifest",
+  "textures": [
+    {
+      "path": "textures\\game_art.png",
+      "type": "PNG",
+      "name": "GameAtlas"
+    },
+    {
+      "path": "textures\\tower.png",
+      "type": "PNG",
+      "name": "Tower"
+    },
+    {
+      "path": "textures\\game_art.png",
+      "type": "PNG",
+      "name": "game_art"
+    }
+  ],
+  "models": [],
+  "materials": [],
+  "shaders": [],
+  "audio": []
+}

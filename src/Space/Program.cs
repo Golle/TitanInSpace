@@ -1,3 +1,4 @@
+using Space;
 using Titan;
 using Titan.Assets;
 using Titan.Core.Logging;
@@ -5,6 +6,7 @@ using Titan.Graphics;
 using Titan.Input;
 using Titan.Runners;
 using Titan.Setup.Configs;
+using Titan.Sound;
 
 #if DEBUG
 using var _ = Logger.Start<ConsoleLogger>(10_000);
@@ -24,6 +26,8 @@ App.Create(new AppCreationArgs())
 #endif
     .AddModule<GraphicsModule>()
     .AddModule<InputModule>()
+    .AddModule<SoundModule>()
+    .AddModule<GameModule>()
     .AddConfig(GraphicsConfig.Default with
     {
         Vsync = true,

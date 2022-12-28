@@ -12,4 +12,9 @@
     <ProjectReference Include="..\..\..\TitanEngine\src\Titan\Titan.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Game\" />
+    <Folder Include="Player\" />
+  </ItemGroup>
+
 </Project>

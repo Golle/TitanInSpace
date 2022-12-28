@@ -3,7 +3,7 @@ name: Space dude
 on: push
 
 jobs:
-  build-engine:
+  build-game:
     runs-on: ubuntu-latest
 
     steps:

@@ -1,5 +1,4 @@
 using Titan.BuiltIn.Components;
-using Titan.Core.Logging;
 using Titan.Core.Maths;
 using Titan.ECS.Queries;
 using Titan.Input;
@@ -27,8 +26,9 @@ internal struct PlayerSystem : ISystem
         ref readonly var playerEntity = ref _query[0];
         ref var player = ref _player.Get(playerEntity);
         player.IsMoving = false;
-        var length = Math.Clamp(player.ElapsedTimeMoving / 0.5f, 0f, 1f);
-        var speed = Easings.EaseInCubic(length) * player.MaxSpeed + player.StartSpeed;
+        var length = Math.Clamp(player.ElapsedTimeMoving / 0.3f, 0f, 1f);
+        var speed = Easings.EasyOutCubic(length) * player.MaxSpeed + player.StartSpeed;
+
         if (_input.IsKeyDown(KeyCode.Up) || _input.IsKeyDown(KeyCode.W))
         {
             _transform[playerEntity].Position.Y += speed;

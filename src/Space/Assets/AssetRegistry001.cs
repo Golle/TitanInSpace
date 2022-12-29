@@ -21,5 +21,13 @@ internal static partial class AssetRegistry
             public static ref readonly Titan.Assets.AssetDescriptor Tower => ref AssetDescriptors[1];
             public static ref readonly Titan.Assets.AssetDescriptor GameArt => ref AssetDescriptors[2];
         }
+
+        //public static class TexCoords
+        //{
+        //    public static class GameAtlas
+        //    {
+        //        public static readonly DrawRect TexCoord001 = default;
+        //    }
+        //}
     }
 }

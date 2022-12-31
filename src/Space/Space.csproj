@@ -1,19 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
     <Nullable>disable</Nullable>
+    
+    <ConsoleLogging>true</ConsoleLogging>
+    <ConsoleWindow>true</ConsoleWindow>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\TitanEngine\src\Titan\Titan.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Player\" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(ConsoleLogging)' == 'true'">
+    <DefineConstants>$(DefineConstants);CONSOLE_LOGGING</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ConsoleWindow)' == 'false'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ConsoleWindow)' == 'true'">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
 
 </Project>

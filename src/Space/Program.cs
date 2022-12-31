@@ -1,5 +1,4 @@
 using Space;
-using Space.Assets;
 using Titan;
 using Titan.Assets;
 using Titan.Core.Logging;
@@ -9,7 +8,7 @@ using Titan.Runners;
 using Titan.Setup.Configs;
 using Titan.Sound;
 
-#if DEBUG
+#if DEBUG || CONSOLE_LOGGING
 using var _ = Logger.Start<ConsoleLogger>(10_000);
 
 var devAssetFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../assets");
@@ -32,21 +31,22 @@ App.Create(new AppCreationArgs())
     .AddModule<GameModule>()
     .AddConfig(GraphicsConfig.Default with
     {
-        Debug = true,
-        Vsync = true,
-        AllowTearing = false
+        Debug = false,
+        Vsync = false,
+        AllowTearing = true,
+        ClearColor = ColorPalette.Darkest
     })
     .AddConfig(WindowConfig.Default with
     {
         Title = "Space Invaders on Titan",
         Windowed = true,
-        //AlwaysOnTop = true
+        //AlwaysOnTop = true,
+        Width = 1024,
+        Height = 768
     })
     
     .UseRunner<WindowedRunner>()
     .Build()
     .Run()
     ;
-
-
 

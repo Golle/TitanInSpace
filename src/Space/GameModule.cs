@@ -1,4 +1,5 @@
 using Space.Assets;
+using Space.Enemies;
 using Space.Game;
 using Space.Player;
 using Titan.ECS.Components;
@@ -13,10 +14,16 @@ internal struct GameModule : IModule
     {
         builder
             .AddComponent<PlayerComponent>(5, ComponentPoolType.Packed)
+            .AddComponent<EnemyComponent>(100, ComponentPoolType.Packed)
+            .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size the the entity id.
             .AddSystem<PlayerSystem>()
             .AddSystem<GameStartupSystem>()
+            .AddSystem<EnemyAnimationSystem>()
+            .AddSystem<PlayerShootingSystem>()
+            .AddSystem<BulletSystem>()
+
             .AddResource(new GameState { CurrentState = GameStateTypes.Startup })
-            
+
             .AddAssetsManifest<AssetRegistry.Manifest>()
             ;
 

@@ -1,4 +1,5 @@
 using Titan.BuiltIn.Components;
+using Titan.BuiltIn.Resources;
 using Titan.Core.Maths;
 using Titan.ECS.Queries;
 using Titan.Input;
@@ -10,6 +11,7 @@ internal struct PlayerSystem : ISystem
 {
     private MutableStorage<Transform2D> _transform;
     private MutableStorage<PlayerComponent> _player;
+    private ReadOnlyResource<TimeStep> _timeStep;
     private InputManager _input;
     private EntityQuery _query;
 
@@ -19,15 +21,17 @@ internal struct PlayerSystem : ISystem
         _player = init.GetMutableStorage<PlayerComponent>();
         _input = init.GetInputManager();
         _query = init.CreateQuery(new EntityQueryArgs().With<PlayerComponent>().With<Transform2D>());
+        _timeStep = init.GetReadOnlyResource<TimeStep>();
     }
 
     public void Update()
     {
         ref readonly var playerEntity = ref _query[0];
+        ref readonly var timestep = ref _timeStep.Get();
         ref var player = ref _player.Get(playerEntity);
         player.IsMoving = false;
         var length = Math.Clamp(player.ElapsedTimeMoving / 0.3f, 0f, 1f);
-        var speed = Easings.EasyOutCubic(length) * player.MaxSpeed + player.StartSpeed;
+        var speed = Easings.EasyOutCubic(length) * player.MaxSpeed + player.StartSpeed * timestep.DeltaTimeSecondsF;
 
         if (_input.IsKeyDown(KeyCode.Up) || _input.IsKeyDown(KeyCode.W))
         {

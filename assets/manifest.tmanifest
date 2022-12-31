@@ -15,7 +15,7 @@
     {
       "path": "textures\\game_art.png",
       "type": "PNG",
-      "name": "game_art"
+      "name": "GameArt"
     }
   ],
   "models": [],

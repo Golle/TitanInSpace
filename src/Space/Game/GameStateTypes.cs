@@ -1,4 +1,4 @@
-﻿namespace Space.Game;
+namespace Space.Game;
 
 internal enum GameStateTypes
 {

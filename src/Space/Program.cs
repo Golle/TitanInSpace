@@ -31,9 +31,12 @@ App.Create(new AppCreationArgs())
     .AddModule<GameModule>()
     .AddConfig(GraphicsConfig.Default with
     {
-        Debug = false,
-        Vsync = false,
-        AllowTearing = true,
+        //Debug = false,
+        //Vsync = false,
+        //AllowTearing = true,
+        Debug = true,
+        Vsync = true,
+        AllowTearing = false,
         ClearColor = ColorPalette.Darkest
     })
     .AddConfig(WindowConfig.Default with
@@ -42,7 +45,8 @@ App.Create(new AppCreationArgs())
         Windowed = true,
         //AlwaysOnTop = true,
         Width = 1024,
-        Height = 768
+        Height = 768,
+        Resizable = true
     })
     
     .UseRunner<WindowedRunner>()

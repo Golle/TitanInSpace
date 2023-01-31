@@ -58,14 +58,13 @@ internal struct PlayerShootingSystem : ISystem
         var bullet = _entityManager.Create();
         _componentManager.AddComponent(bullet, Transform2D.Default with
         {
-            Position = new Vector2(x, 50),
-            Scale = Vector2.One * 4
+            Position = new Vector2(x, 10),
         });
         _componentManager.AddComponent(bullet, new Sprite
         {
             Asset = _assetManager.Load(AssetRegistry.Manifest.Textures.GameArt),
             Color = Color.White,
-            Pivot = new Vector2(0.5f, 0),
+            Pivot = new Vector2(0.5f, 0.5f),
             SourceRect = SpriteRectangles.Bullet1_0
         });
         _componentManager.AddComponent<BulletComponent>(bullet);

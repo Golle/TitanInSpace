@@ -6,5 +6,4 @@ namespace Space.Player;
 [StructLayout(LayoutKind.Sequential, Size = 1)]
 internal struct BulletComponent : IComponent
 {
-    public static ComponentId ID => ComponentId<BulletComponent>.Id;
 }

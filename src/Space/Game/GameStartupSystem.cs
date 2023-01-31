@@ -1,5 +1,6 @@
 using System.Numerics;
 using Space.Assets;
+using Space.Enemies;
 using Space.Player;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
@@ -30,32 +31,63 @@ internal struct GameStartupSystem : ISystem
 
     public void Update()
     {
-        var entity = _entityManager.Create();
-        var spriteSheet = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
-        _componentsManager.AddComponent(entity, new Transform2D(new Vector2(_window.Value.Width / 2f, 0), Vector2.One * 10));
-        _componentsManager.AddComponent(entity, new PlayerComponent { StartSpeed = 0.01f, MaxSpeed = 0.3f });
-        _componentsManager.AddComponent(entity, new Sprite
+        var camera = _entityManager.Create();
+        _componentsManager.AddComponent(camera, Transform2D.Default);
+        _componentsManager.AddComponent(camera, new Camera2D
         {
-            Asset = spriteSheet,
-            Color = ColorPalette.Lighter,
-            SourceRect = SpriteRectangles.Player,
-            Pivot = new Vector2(0.5f, 0)
+            ClearColor = ColorPalette.Darkest,
+            Size = _window.Value.Size / 4f
         });
-        SpawnEnemies(3, 10, spriteSheet, _window.Value.Size);
+
+        // Load the shared sprite sheet
+        var spriteSheet = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
+
+        // Add the player
+        {
+            var entity = _entityManager.Create();
+
+            _componentsManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(_gameState.Get().BoardSize.Width / 2f, 0) });
+            _componentsManager.AddComponent(entity, new PlayerComponent { StartSpeed = 50f, MaxSpeed = 130f, Width = SpriteRectangles.Player.Width });
+            _componentsManager.AddComponent(entity, new Sprite
+            {
+                Asset = spriteSheet,
+                Color = ColorPalette.Lighter,
+                SourceRect = SpriteRectangles.Player,
+                Pivot = new Vector2(0.5f, 0)
+            });
+        }
+        // Debug background
+#if DEBUG
+        {
+            var entity = _entityManager.Create();
+
+            _componentsManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(0, 0), Scale = new Vector2(_gameState.Get().BoardSize.Width, _gameState.Get().BoardSize.Height) });
+            _componentsManager.AddComponent(entity, new Sprite
+            {
+                Asset = spriteSheet,
+                Color = Color.Green, // with { A = 0.05f },
+                SourceRect = new Rectangle(4, 4, 1, 1),
+                Pivot = new Vector2(0),
+                Layer = short.MinValue
+            });
+        }
+#endif
+        // Spawn enemies
+        //SpawnEnemies(3, 10, spriteSheet, _window.Value.Size);
 
         _gameState.Get().CurrentState = GameStateTypes.Playing;
     }
 
     private void SpawnEnemies(int rows, int columns, Handle<Asset> asset, in Size windowSize)
     {
-        const uint enemyMultiplier = 6;
+        const uint enemyMultiplier = 1;
         const uint spaceBetweenRows = 10;
         const uint spaceBetweenColumns = 14;
         const uint enemyWidth = 12 * enemyMultiplier;
         const uint enemyHeight = 8 * enemyMultiplier;
-        var center = windowSize.Width / 2;
-        var totalSize = columns * enemyWidth + (columns-1) * spaceBetweenColumns;
-        var startOffset = center - totalSize / 2 + enemyWidth/2;
+        var center = windowSize.Width / 4;
+        var totalSize = columns * enemyWidth + (columns - 1) * spaceBetweenColumns;
+        var startOffset = center - totalSize / 2 + enemyWidth / 2;
         Span<Color> color = stackalloc Color[3];
         color[0] = ColorPalette.Lighter;
         color[1] = ColorPalette.Darker;
@@ -90,5 +122,5 @@ internal struct GameStartupSystem : ISystem
 
     }
 
-    public bool ShouldRun() => _gameState.Get().CurrentState == GameStateTypes.Startup;
+    public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Startup;
 }

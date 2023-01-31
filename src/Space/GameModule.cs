@@ -3,6 +3,7 @@ using Space.Assets;
 using Space.Enemies;
 using Space.Game;
 using Space.Player;
+using Space.Splash;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
 using Titan.Core;
@@ -94,6 +95,7 @@ internal struct GameModule : IModule
             .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size the the entity id.
             .AddComponent<MouseComponent>(ComponentPoolType.Sparse)
             //.AddSystem<TestSystem>()
+            .AddSystem<SplashSystem>()
             .AddSystem<PlayerMovementSystem>()
             .AddSystem<GameCameraSystem>()
             .AddSystem<GameStartupSystem>()
@@ -101,7 +103,7 @@ internal struct GameModule : IModule
             .AddSystem<PlayerShootingSystem>()
             .AddSystem<BulletSystem>()
 
-            .AddResource(new GameState(OriginalBoardSize) { CurrentState = GameStateTypes.Startup })
+            .AddResource(new GameState(OriginalBoardSize) { CurrentState = GameStateTypes.Splash })
 
             .AddAssetsManifest<AssetRegistry.Manifest>()
             ;

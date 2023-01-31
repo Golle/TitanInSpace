@@ -8,7 +8,6 @@ using Titan.Core;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.Systems;
-using Titan.Windows;
 
 namespace Space.Game;
 
@@ -18,7 +17,6 @@ internal struct GameStartupSystem : ISystem
     private MutableResource<GameState> _gameState;
     private ComponentManager _componentsManager;
     private AssetsManager _assetsManager;
-    private ObjectHandle<IWindow> _window;
 
     public void Init(in SystemInitializer init)
     {
@@ -26,19 +24,10 @@ internal struct GameStartupSystem : ISystem
         _gameState = init.GetMutableResource<GameState>();
         _componentsManager = init.GetComponentManager();
         _assetsManager = init.GetAssetsManager();
-        _window = init.GetManagedApi<IWindow>();
     }
 
     public void Update()
     {
-        var camera = _entityManager.Create();
-        _componentsManager.AddComponent(camera, Transform2D.Default);
-        _componentsManager.AddComponent(camera, new Camera2D
-        {
-            ClearColor = ColorPalette.Darkest,
-            Size = _window.Value.Size / 4f
-        });
-
         // Load the shared sprite sheet
         var spriteSheet = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
 
@@ -56,6 +45,11 @@ internal struct GameStartupSystem : ISystem
                 Pivot = new Vector2(0.5f, 0)
             });
         }
+
+        // Spawn enemies
+        SpawnEnemies(3, 11, spriteSheet, _gameState.Get().BoardSize);
+
+
         // Debug background
 #if DEBUG
         {
@@ -65,62 +59,58 @@ internal struct GameStartupSystem : ISystem
             _componentsManager.AddComponent(entity, new Sprite
             {
                 Asset = spriteSheet,
-                Color = Color.Green, // with { A = 0.05f },
+                Color = Color.Red with { A = 0.05f },
                 SourceRect = new Rectangle(4, 4, 1, 1),
                 Pivot = new Vector2(0),
                 Layer = short.MinValue
             });
         }
 #endif
-        // Spawn enemies
-        //SpawnEnemies(3, 10, spriteSheet, _window.Value.Size);
 
+        // change the game state
         _gameState.Get().CurrentState = GameStateTypes.Playing;
     }
 
-    private void SpawnEnemies(int rows, int columns, Handle<Asset> asset, in Size windowSize)
+    private void SpawnEnemies(int rows, int columns, Handle<Asset> asset, in Size boardSize)
     {
-        const uint enemyMultiplier = 1;
-        const uint spaceBetweenRows = 10;
-        const uint spaceBetweenColumns = 14;
-        const uint enemyWidth = 12 * enemyMultiplier;
-        const uint enemyHeight = 8 * enemyMultiplier;
-        var center = windowSize.Width / 4;
-        var totalSize = columns * enemyWidth + (columns - 1) * spaceBetweenColumns;
-        var startOffset = center - totalSize / 2 + enemyWidth / 2;
-        Span<Color> color = stackalloc Color[3];
-        color[0] = ColorPalette.Lighter;
-        color[1] = ColorPalette.Darker;
-        color[2] = ColorPalette.Middle;
+        const int topOffset = 10;
+        const int rowHeight = 20;
 
-        //NOTE(Jens): must implement parent/child support to move all units at the same time.
-        for (var y = 0; y < rows; y++)
+        const int columnWidth = 20;
+
+        var totalWidth = columnWidth * columns+1;
+        var halfWidth = totalWidth / 2f;
+        var startOffset = boardSize.Width / 2f - halfWidth  + columnWidth/2f;
+
+        for (var row = 0; row < rows; row++)
         {
-            for (var x = 0; x < columns; x++)
+            for (var column = 0; column < columns; column++)
             {
                 var entity = _entityManager.Create();
                 var enemy = new EnemyComponent
                 {
-                    Sprite1 = y % 2 == 0 ? SpriteRectangles.Monster1_0 : SpriteRectangles.Monster2_0,
-                    Sprite2 = y % 2 == 0 ? SpriteRectangles.Monster1_1 : SpriteRectangles.Monster2_1,
+                    Sprite1 = column % 2 == 0 ? SpriteRectangles.Monster1_0 : SpriteRectangles.Monster2_0,
+                    Sprite2 = column % 2 == 0 ? SpriteRectangles.Monster1_1 : SpriteRectangles.Monster2_1,
                 };
                 _componentsManager.AddComponent(entity, enemy);
                 _componentsManager.AddComponent(entity, Transform2D.Default with
                 {
-                    Position = new Vector2(startOffset + x * (enemyWidth + spaceBetweenColumns), 700 - (y * (enemyHeight + spaceBetweenRows))),
-                    Scale = Vector2.One * enemyMultiplier,
+                    Position = new Vector2(columnWidth * column + startOffset, boardSize.Height - rowHeight * row - topOffset)
                 });
                 _componentsManager.AddComponent(entity, new Sprite
                 {
                     Asset = asset,
-                    Color = color[Random.Shared.Next(0, 2)],
+                    Color = Random.Shared.Next(0, 2) switch
+                    {
+                        0 => ColorPalette.Lighter,
+                        1 => ColorPalette.Darker,
+                        _ => ColorPalette.Middle,
+                    },
                     SourceRect = enemy.Sprite1,
-                    Pivot = new Vector2(0.5f, 0)
+                    Pivot = new Vector2(0.5f, 1)
                 });
             }
         }
-
     }
-
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Startup;
 }

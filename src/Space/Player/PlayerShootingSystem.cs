@@ -75,7 +75,7 @@ internal struct PlayerShootingSystem : ISystem
             Category = CollisionCategories.Bullet,
             CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader
         });
-        _componentManager.AddComponent<BulletComponent>(bullet);
+        _componentManager.AddComponent<BulletComponent>(bullet, default);
     }
 
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Playing;

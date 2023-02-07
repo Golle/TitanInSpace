@@ -21,6 +21,8 @@ internal struct GameCameraSystem : ISystem
     private ComponentManager _componentManager;
 
     private Entity _cameraEntity;
+    private Entity _parent;
+
     public void Init(in SystemInitializer init)
     {
         _query = init.CreateQuery(new EntityQueryArgs().With<Transform2D>().With<Camera2D>());
@@ -37,6 +39,8 @@ internal struct GameCameraSystem : ISystem
     {
         if (_cameraEntity.IsInvalid)
         {
+            _parent = _entityManager.Create();
+            _componentManager.AddComponent(_parent, Transform2D.Default);
             _cameraEntity = _entityManager.Create();
             _componentManager.AddComponent(_cameraEntity, Transform2D.Default);
             _componentManager.AddComponent(_cameraEntity, new Camera2D
@@ -44,6 +48,7 @@ internal struct GameCameraSystem : ISystem
                 ClearColor = ColorPalette.Darkest,
                 Size = _window.Value.Size / 4f
             });
+            _entityManager.Attach(_parent, _cameraEntity);
         }
 
         foreach (ref readonly var entity in _query)

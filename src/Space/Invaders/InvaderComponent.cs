@@ -7,5 +7,7 @@ internal struct InvaderComponent : IComponent
 {
     public Rectangle Sprite1, Sprite2;
     public int SpriteIndex;
+    public float InvaderWidth;
     public float TimeElapsed;
+    public float ShootingCooldown;
 }

@@ -60,12 +60,12 @@ internal struct InvaderSpawnSystem : ISystem
         {
             for (var col = 0u; col < gameState.InvaderColumns; ++col)
             {
-                SpawnEnemy(offsetX + col * invaderBlockSize, offsetY - row * invaderBlockHeight);
+                SpawnInvader(offsetX + col * invaderBlockSize, offsetY - row * invaderBlockHeight, gameState);
             }
         }
     }
 
-    private void SpawnEnemy(float x, float y)
+    private void SpawnInvader(float x, float y, in GameState gameState)
     {
         var entity = _entityManager.Create();
         _componentsManager.AddComponent(entity, Transform2D.Default with
@@ -87,13 +87,15 @@ internal struct InvaderSpawnSystem : ISystem
         _componentsManager.AddComponent(entity, new InvaderComponent
         {
             Sprite1 = SpriteRectangles.Monster1_0,
-            Sprite2 = SpriteRectangles.Monster1_1
+            Sprite2 = SpriteRectangles.Monster1_1,
+            ShootingCooldown = gameState.InvaderMinShootingCooldown,
+            InvaderWidth = SpriteRectangles.Monster1_0.Width
         });
         _componentsManager.AddComponent(entity, new BoxCollider2D
         {
-            Size = new(SpriteRectangles.Monster1_0.Width, SpriteRectangles.Monster1_0.Height),
+            Size = new (SpriteRectangles.Monster1_0.Width, SpriteRectangles.Monster1_0.Height),
             Category = CollisionCategories.Invader
-        });
+});
         _entityManager.Attach(_enemyContainer, entity);
     }
 

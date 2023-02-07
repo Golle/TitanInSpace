@@ -6,5 +6,5 @@ namespace Space.Bullets;
 [StructLayout(LayoutKind.Sequential, Size = 1)]
 internal struct BulletComponent : IComponent
 {
-    public int Direction;
+    public bool Down;
 }

@@ -14,8 +14,11 @@ namespace Space;
 internal struct GameModule : IModule
 {
     private static readonly Size OriginalBoardSize = new(224, 256);
-    private const uint MonsterRows = 5;
-    private const uint MonsterColumns = 11;
+    private const uint InvaderRows = 5;
+    private const uint InvaderColumns = 11;
+
+    private const float InvaderMinShootingCooldown = 2f;
+    private const float InvaderMaxShootingCooldown = 3f;
     public static bool Build(IAppBuilder builder)
     {
         builder
@@ -28,16 +31,18 @@ internal struct GameModule : IModule
             .AddSystem<ShieldSpawnSystem>()
             .AddSystem<ShieldDamageSystem>()
             .AddSystem<PlayerMovementSystem>()
+            .AddSystem<CameraShakeSystem>()
             .AddSystem<InvaderSpawnSystem>()
             .AddSystem<InvaderMovementSystem>()
             .AddSystem<InvaderDamageSystem>()
+            .AddSystem<InvaderShootingSystem>()
             .AddSystem<GameCameraSystem>()
             .AddSystem<GameStartupSystem>()
             .AddSystem<InvaderAnimationSystem>()
             .AddSystem<PlayerShootingSystem>()
             .AddSystem<BulletSystem>()
 
-            .AddResource(new GameState(OriginalBoardSize, MonsterRows, MonsterColumns) { CurrentState = GameStateTypes.Splash })
+            .AddResource(new GameState(OriginalBoardSize, InvaderRows, InvaderColumns, InvaderMinShootingCooldown, InvaderMaxShootingCooldown) { CurrentState = GameStateTypes.Splash })
 
             .AddAssetsManifest<AssetRegistry.Manifest>()
             ;

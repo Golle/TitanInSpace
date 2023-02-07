@@ -11,6 +11,7 @@ internal struct BulletSystem : ISystem
 {
     private ReadOnlyResource<TimeStep> _timestep;
     private MutableStorage<Transform2D> _transform;
+    private ReadOnlyStorage<BulletComponent> _bullet;
     private ReadOnlyResource<GameState> _gameState;
     private EntityQuery _query;
     private EntityManager _entityManager;
@@ -20,6 +21,7 @@ internal struct BulletSystem : ISystem
     public void Init(in SystemInitializer init)
     {
         _transform = init.GetMutableStorage<Transform2D>();
+        _bullet = init.GetReadOnlyStorage<BulletComponent>();
         _query = init.CreateQuery(new EntityQueryArgs().With<BulletComponent>().With<Transform2D>());
         _timestep = init.GetReadOnlyResource<TimeStep>();
         _entityManager = init.GetEntityManager();
@@ -33,13 +35,14 @@ internal struct BulletSystem : ISystem
         foreach (ref readonly var entity in _query)
         {
             ref var transform = ref _transform[entity];
-            if (transform.Position.Y > maxHeight)
+            if (transform.Position.Y > maxHeight || transform.Position.Y < 0)
             {
                 _entityManager.Destroy(entity);
             }
             else
             {
-                transform.Position.Y += Speed * SpeedMultiplier * 20 * timestep.DeltaTimeSecondsF;
+                var speed = _bullet[entity].Down ? -20 : 20;
+                transform.Position.Y += Speed * SpeedMultiplier * speed * timestep.DeltaTimeSecondsF;
             }
         }
     }

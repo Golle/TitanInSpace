@@ -1,6 +1,7 @@
 using Titan.BuiltIn.Components;
+using Titan.BuiltIn.Events;
 using Titan.ECS;
-using Titan.ECS.Queries;
+using Titan.Events;
 using Titan.Systems;
 
 namespace Space.Shields;
@@ -8,42 +9,40 @@ namespace Space.Shields;
 internal struct ShieldDamageSystem : ISystem
 {
     private static readonly int MaxDamage = SpriteRectangles.Shields.Length - 1;
-    private EntityQuery _query;
     private MutableStorage<Sprite> _sprites;
     private MutableStorage<ShieldComponent> _shields;
     private EntityManager _entityManager;
+    private EventsReader<Collision2DEnter> _collisionEnter;
 
     public void Init(in SystemInitializer init)
     {
         _entityManager = init.GetEntityManager();
         _sprites = init.GetMutableStorage<Sprite>();
         _shields = init.GetMutableStorage<ShieldComponent>();
-        _query = init.CreateQuery(new EntityQueryArgs().With<ShieldComponent>().With<Sprite>());
+        _collisionEnter = init.GetEventsReader<Collision2DEnter>();
     }
 
     public void Update()
     {
-        return;
-        foreach (ref readonly var entity in _query)
+        foreach (ref readonly var @event in _collisionEnter)
         {
-            ref var sprite = ref _sprites[entity];
-            ref var shield = ref _shields[entity];
-
-            if (Random.Shared.Next(0, 6000) < 40)
+            if (@event.Source.Category == CollisionCategories.Bullet && @event.Target.Category == CollisionCategories.Shield)
             {
-                shield.Damage++;
-                if (shield.Damage >= MaxDamage)
+                var shieldEntity = @event.Target.Entity;
+                ref var shield = ref _shields[shieldEntity];
+                if (shield.Damage++ >= MaxDamage)
                 {
-                    _entityManager.Destroy(entity);
+                    _entityManager.Destroy(shieldEntity);
                 }
                 else
                 {
+                    ref var sprite = ref _sprites[shieldEntity];
                     sprite.SourceRect = SpriteRectangles.Shields[shield.Damage];
                 }
+                _entityManager.Destroy(@event.Source.Entity);
             }
         }
     }
 
-
-    public bool ShouldRun() => _query.HasEntities();
+    public bool ShouldRun() => _collisionEnter.HasEvents();
 }

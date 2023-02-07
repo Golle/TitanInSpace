@@ -1,7 +1,6 @@
 using Space;
 using Titan;
 using Titan.Assets;
-using Titan.BuiltIn.Components;
 using Titan.Core.Logging;
 using Titan.Graphics;
 using Titan.Input;

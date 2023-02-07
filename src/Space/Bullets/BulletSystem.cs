@@ -5,7 +5,7 @@ using Titan.ECS;
 using Titan.ECS.Queries;
 using Titan.Systems;
 
-namespace Space.Player;
+namespace Space.Bullets;
 
 internal struct BulletSystem : ISystem
 {

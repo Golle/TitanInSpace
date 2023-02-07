@@ -1,5 +1,6 @@
 using System.Numerics;
 using Space.Assets;
+using Space.Bullets;
 using Space.Game;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
@@ -72,7 +73,7 @@ internal struct PlayerShootingSystem : ISystem
         {
             Size = new SizeF(4, 10),
             Category = CollisionCategories.Bullet,
-            CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader | CollisionCategories.Player
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader
         });
         _componentManager.AddComponent<BulletComponent>(bullet);
     }

@@ -2,6 +2,7 @@ using System.Numerics;
 using Space.Game;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
+using Titan.ECS;
 using Titan.ECS.Queries;
 using Titan.Systems;
 
@@ -16,6 +17,7 @@ internal struct InvaderMovementSystem : ISystem
     private EntityQuery _query;
 
     private InvaderMoveDirection _direction;
+    private EntityManager _entityManager;
 
     public void Init(in SystemInitializer init)
     {
@@ -23,14 +25,25 @@ internal struct InvaderMovementSystem : ISystem
         _query = init.CreateQuery(new EntityQueryArgs().With<Transform2D>().With<InvaderComponent>());
         _timestep = init.GetReadOnlyResource<TimeStep>();
         _gamestate = init.GetReadOnlyResource<GameState>();
+        _entityManager = init.GetEntityManager();
     }
 
     public void Update()
     {
-        return;
+        ref readonly var gameState = ref _gamestate.Get();
         ref readonly var boardSize = ref _gamestate.Get().BoardSize;
-        var speed = 3f;
-        var jump = 8f;
+        
+        var totalInvaders = gameState.InvaderColumns * gameState.InvaderRows;
+        var currentInvaders = _query.Count;
+        var invadersDelta = (totalInvaders - currentInvaders) / (float)totalInvaders;
+
+
+        // tweak this later :)
+        const float minSpeed = 6f;
+        const float maxSpeed = 80f;
+        const float jump = 4f;
+        var speed = invadersDelta * maxSpeed + minSpeed;
+        
         var timestep = _timestep.Get().DeltaTimeSecondsF;
         var delta = _direction switch
         {
@@ -62,6 +75,11 @@ internal struct InvaderMovementSystem : ISystem
             else if (_direction == InvaderMoveDirection.Left && transform.Position.X <= 0)
             {
                 nextDirection = InvaderMoveDirection.DownRight;
+            }
+
+            if (Random.Shared.Next(10000) < 15)
+            {
+                _entityManager.Destroy(entity);
             }
         }
         _direction = nextDirection;

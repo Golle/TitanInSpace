@@ -1,11 +1,13 @@
 using System.Numerics;
 using Space.Assets;
+using Space.Events;
 using Space.Game;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.ECS.Entities;
+using Titan.Events;
 using Titan.Input;
 using Titan.Systems;
 
@@ -21,6 +23,7 @@ internal struct SplashSystem : ISystem
 
     private Entity _splashEntity;
     private AssetsManager _assetsManager;
+    private EventsWriter<GameStartEvent> _gameStartEvent;
 
     public void Init(in SystemInitializer init)
     {
@@ -29,8 +32,9 @@ internal struct SplashSystem : ISystem
         _assetsManager = init.GetAssetsManager();
         _input = init.GetInputManager();
 
-        _gameState = init.GetMutableResource<GameState>(true);
+        _gameState = init.GetMutableResource<GameState>();
         _transform = init.GetMutableStorage<Transform2D>();
+        _gameStartEvent = init.GetEventsWriter<GameStartEvent>();
     }
 
     public void Update()
@@ -57,6 +61,8 @@ internal struct SplashSystem : ISystem
             _gameState.Get().CurrentState = GameStateTypes.Startup;
             _entityManager.Destroy(_splashEntity);
             _splashEntity = Entity.Invalid;
+            
+            _gameStartEvent.Send(new GameStartEvent());
         }
     }
 

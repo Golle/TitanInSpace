@@ -1,20 +1,19 @@
 using System.Numerics;
 using Space.Assets;
-using Space.Enemies;
 using Space.Game;
+using Space.Invaders;
 using Space.Player;
+using Space.Shields;
 using Space.Splash;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
 using Titan.Core;
-using Titan.Core.Logging;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.ECS.Components;
 using Titan.ECS.Queries;
 using Titan.Input;
 using Titan.Modules;
-using Titan.Platform.Posix;
 using Titan.Setup;
 using Titan.Systems;
 using Titan.Windows;
@@ -27,7 +26,6 @@ internal struct TestSystem : ISystem
     private AssetsManager _assetsManager;
     private ComponentManager _componentManager;
     private EntityManager _entityManager;
-    private InputManager _input;
 
     private MutableStorage<Transform2D> _transform;
     private EntityQuery _query;
@@ -44,7 +42,6 @@ internal struct TestSystem : ISystem
         _transform = init.GetMutableStorage<Transform2D>();
 
         _query = init.CreateQuery(new EntityQueryArgs().With<Transform2D>().With<MouseComponent>());
-        _input = init.GetInputManager();
         _window = init.GetManagedApi<IWindow>();
     }
 
@@ -87,23 +84,30 @@ internal struct MouseComponent : IComponent
 internal struct GameModule : IModule
 {
     private static readonly Size OriginalBoardSize = new(224, 256);
+    private const uint MonsterRows = 5;
+    private const uint MonsterColumns = 11;
     public static bool Build(IAppBuilder builder)
     {
         builder
             .AddComponent<PlayerComponent>(5, ComponentPoolType.Packed)
-            .AddComponent<EnemyComponent>(100, ComponentPoolType.Packed)
+            .AddComponent<ShieldComponent>(10, ComponentPoolType.Packed)
+            .AddComponent<InvaderComponent>(1000, ComponentPoolType.Packed)
             .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size the the entity id.
             .AddComponent<MouseComponent>(ComponentPoolType.Sparse)
             //.AddSystem<TestSystem>()
             .AddSystem<SplashSystem>()
+            .AddSystem<ShieldSpawnSystem>()
+            .AddSystem<ShieldDamageSystem>()
             .AddSystem<PlayerMovementSystem>()
+            .AddSystem<InvaderSpawnSystem>()
+            .AddSystem<InvaderMovementSystem>()
             .AddSystem<GameCameraSystem>()
             .AddSystem<GameStartupSystem>()
-            .AddSystem<EnemyAnimationSystem>()
+            .AddSystem<InvaderAnimationSystem>()
             .AddSystem<PlayerShootingSystem>()
             .AddSystem<BulletSystem>()
 
-            .AddResource(new GameState(OriginalBoardSize) { CurrentState = GameStateTypes.Splash })
+            .AddResource(new GameState(OriginalBoardSize, MonsterRows, MonsterColumns) { CurrentState = GameStateTypes.Splash })
 
             .AddAssetsManifest<AssetRegistry.Manifest>()
             ;

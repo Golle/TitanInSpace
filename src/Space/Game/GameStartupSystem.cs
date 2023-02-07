@@ -1,6 +1,6 @@
 using System.Numerics;
 using Space.Assets;
-using Space.Enemies;
+using Space.Invaders;
 using Space.Player;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
@@ -33,21 +33,28 @@ internal struct GameStartupSystem : ISystem
 
         // Add the player
         {
-            var entity = _entityManager.Create();
+            var player = _entityManager.Create();
 
-            _componentsManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(_gameState.Get().BoardSize.Width / 2f, 0) });
-            _componentsManager.AddComponent(entity, new PlayerComponent { StartSpeed = 50f, MaxSpeed = 130f, Width = SpriteRectangles.Player.Width });
-            _componentsManager.AddComponent(entity, new Sprite
+            _componentsManager.AddComponent(player, Transform2D.Default with { Position = new Vector2(_gameState.Get().BoardSize.Width / 2f, 40) });
+            _componentsManager.AddComponent(player, new PlayerComponent { StartSpeed = 50f, MaxSpeed = 130f, Width = SpriteRectangles.Player.Width });
+            var pivot = new Vector2(0.5f, 0);
+            _componentsManager.AddComponent(player, new Sprite
             {
                 Asset = spriteSheet,
                 Color = ColorPalette.Lighter,
                 SourceRect = SpriteRectangles.Player,
-                Pivot = new Vector2(0.5f, 0)
+                Pivot = pivot
+            });
+            _componentsManager.AddComponent(player, BoxCollider2D.Default with
+            {
+                Category = CollisionCategories.Player,
+                Pivot = pivot,
+                Size = new(SpriteRectangles.Player.Width, SpriteRectangles.Player.Height)
             });
         }
 
         // Spawn enemies
-        SpawnEnemies(3, 11, spriteSheet, _gameState.Get().BoardSize);
+        //SpawnEnemies(3, 11, spriteSheet, _gameState.Get().BoardSize);
 
 
         // Debug background
@@ -78,16 +85,16 @@ internal struct GameStartupSystem : ISystem
 
         const int columnWidth = 20;
 
-        var totalWidth = columnWidth * columns+1;
+        var totalWidth = columnWidth * columns + 1;
         var halfWidth = totalWidth / 2f;
-        var startOffset = boardSize.Width / 2f - halfWidth  + columnWidth/2f;
+        var startOffset = boardSize.Width / 2f - halfWidth + columnWidth / 2f;
 
         for (var row = 0; row < rows; row++)
         {
             for (var column = 0; column < columns; column++)
             {
                 var entity = _entityManager.Create();
-                var enemy = new EnemyComponent
+                var enemy = new InvaderComponent
                 {
                     Sprite1 = column % 2 == 0 ? SpriteRectangles.Monster1_0 : SpriteRectangles.Monster2_0,
                     Sprite2 = column % 2 == 0 ? SpriteRectangles.Monster1_1 : SpriteRectangles.Monster2_1,

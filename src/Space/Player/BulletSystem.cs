@@ -17,7 +17,6 @@ internal struct BulletSystem : ISystem
 
     private const float Speed = 1f;
     private const float SpeedMultiplier = 10;
-    private int rotation;
     public void Init(in SystemInitializer init)
     {
         _transform = init.GetMutableStorage<Transform2D>();
@@ -41,9 +40,7 @@ internal struct BulletSystem : ISystem
             else
             {
                 transform.Position.Y += Speed * SpeedMultiplier * 20 * timestep.DeltaTimeSecondsF;
-                transform.SetEulerRotation(rotation % 360);
             }
         }
-        rotation = unchecked(rotation + 1);
     }
 }

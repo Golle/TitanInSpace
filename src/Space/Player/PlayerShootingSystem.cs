@@ -48,28 +48,34 @@ internal struct PlayerShootingSystem : ISystem
         if (_input.IsKeyPressed(KeyCode.Space) && _timeSinceLastShot <= 0)
         {
             var playerEntity = _query[0];
-            var playerPositionX = _transform.Get(playerEntity).Position.X;
-            SpawnBullet(playerPositionX);
+            var position = _transform.Get(playerEntity).Position;
+            SpawnBullet(position);
             _timeSinceLastShot = TimeBetweenShots;
         }
     }
-    private void SpawnBullet(float x)
+    private void SpawnBullet(Vector2 playerPosition)
     {
         var bullet = _entityManager.Create();
         _componentManager.AddComponent(bullet, Transform2D.Default with
         {
-            Position = new Vector2(x, 10),
+            Position = playerPosition + Vector2.UnitY * 10,
+            Scale = Vector2.One * 0.5f
         });
         _componentManager.AddComponent(bullet, new Sprite
         {
-            Asset = _assetManager.Load(AssetRegistry.Manifest.Textures.GameArt),
+            Asset = _assetManager.Load(AssetRegistry.Manifest.Textures.GameAtlas),
             Color = Color.White,
             Pivot = new Vector2(0.5f, 0.5f),
             SourceRect = SpriteRectangles.Bullet1_0
         });
+        _componentManager.AddComponent(bullet, new BoxCollider2D
+        {
+            Size = new SizeF(4, 10),
+            Category = CollisionCategories.Bullet,
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader | CollisionCategories.Player
+        });
         _componentManager.AddComponent<BulletComponent>(bullet);
-
     }
 
-    public bool ShouldRun() => _gameState.Get().CurrentState == GameStateTypes.Playing;
+    public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Playing;
 }

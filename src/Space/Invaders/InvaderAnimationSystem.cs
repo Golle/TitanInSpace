@@ -3,20 +3,20 @@ using Titan.BuiltIn.Resources;
 using Titan.ECS.Queries;
 using Titan.Systems;
 
-namespace Space.Enemies;
+namespace Space.Invaders;
 
-internal struct EnemyAnimationSystem : ISystem
+internal struct InvaderAnimationSystem : ISystem
 {
     private EntityQuery _query;
     private ReadOnlyResource<TimeStep> _timeStep;
-    private MutableStorage<EnemyComponent> _enemy;
+    private MutableStorage<InvaderComponent> _enemy;
     private MutableStorage<Sprite> _sprite;
 
     public void Init(in SystemInitializer init)
     {
-        _enemy = init.GetMutableStorage<EnemyComponent>();
+        _enemy = init.GetMutableStorage<InvaderComponent>();
         _sprite = init.GetMutableStorage<Sprite>();
-        _query = init.CreateQuery(new EntityQueryArgs().With<EnemyComponent>().With<Sprite>());
+        _query = init.CreateQuery(new EntityQueryArgs().With<InvaderComponent>().With<Sprite>());
         _timeStep = init.GetReadOnlyResource<TimeStep>();
     }
 

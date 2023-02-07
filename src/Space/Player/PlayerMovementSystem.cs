@@ -39,18 +39,6 @@ internal struct PlayerMovementSystem : ISystem
         var length = Math.Clamp(player.ElapsedTimeMoving / 0.3f, 0f, 1f);
         var speed = (Easings.EasyOutCubic(length) * player.MaxSpeed + player.StartSpeed) * timestep.DeltaTimeSecondsF;
 
-        if (_input.IsKeyDown(KeyCode.Up) || _input.IsKeyDown(KeyCode.W))
-        {
-            transform.Position.Y += speed;
-            player.IsMoving = true;
-        }
-
-        if (_input.IsKeyDown(KeyCode.Down) || _input.IsKeyDown(KeyCode.S))
-        {
-            transform.Position.Y -= speed;
-            player.IsMoving = true;
-        }
-
         if (_input.IsKeyDown(KeyCode.Right) || _input.IsKeyDown(KeyCode.D))
         {
             transform.Position.X += speed;

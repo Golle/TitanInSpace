@@ -21,7 +21,18 @@ internal static class SpriteRectangles
     public static readonly Rectangle Monster1_1 = new(16, 0, 12, 8);
     public static readonly Rectangle Monster2_0 = new(32, 0, 8, 8);
     public static readonly Rectangle Monster2_1 = new(48, 0, 8, 8);
-    
+
 
     public static readonly Rectangle Bullet1_0 = new(0, 64, 2, 9);
+
+    public static readonly Rectangle[] Shields = {
+        new(0, 96, 11, 11),
+        new(16, 96, 11, 11),
+        new(32, 96, 11, 11),
+        new(48, 96, 11, 11),
+        new(64, 96, 11, 11),
+        new(80, 96, 11, 11),
+        new(96, 96, 11, 11),
+        new(112, 96, 11, 11),
+    };
 }

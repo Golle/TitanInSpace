@@ -6,16 +6,6 @@
       "path": "textures\\game_art.png",
       "type": "PNG",
       "name": "GameAtlas"
-    },
-    {
-      "path": "textures\\tower.png",
-      "type": "PNG",
-      "name": "Tower"
-    },
-    {
-      "path": "textures\\game_art.png",
-      "type": "PNG",
-      "name": "GameArt"
     }
   ],
   "models": [],

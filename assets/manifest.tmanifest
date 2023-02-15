@@ -3,13 +3,26 @@
   "name": "Manifest",
   "textures": [
     {
-      "path": "textures\\game_art.png",
-      "type": "PNG",
+      "path": "textures\\game_art.aseprite",
+      "type": "Aseprite",
       "name": "GameAtlas"
     }
   ],
   "models": [],
   "materials": [],
   "shaders": [],
-  "audio": []
+  "audio": [
+    {
+      "path": "audio\\loading.wav",
+      "name": "SplashScreenMusic"
+    },
+    {
+      "path": "audio\\battle.wav",
+      "name": "CombatMusic"
+    },
+    {
+      "path": "audio\\laser gun.wav",
+      "name": "Laser"
+    }
+  ]
 }

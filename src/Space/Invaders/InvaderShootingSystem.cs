@@ -41,7 +41,8 @@ internal struct InvaderShootingSystem : ISystem
         // calculate the part of the max that is left and use that to determine the change of shooting
         ref readonly var gameState = ref _gameState.Get();
         var totalInvaders = gameState.InvaderColumns * gameState.InvaderRows;
-        var shotProbability = (totalInvaders - _query.Count) / (float)totalInvaders;
+        //NOTE(Jens): 0 chance of invaders shooting if the player hasn't killed one :) not indended.
+        var shotProbability = (totalInvaders - _query.Count) / (float)totalInvaders; 
 
         var time = _timestep.Get().DeltaTimeSecondsF;
         foreach (ref readonly var entity in _query)

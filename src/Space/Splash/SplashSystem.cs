@@ -4,11 +4,13 @@ using Space.Events;
 using Space.Game;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
+using Titan.Core;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.ECS.Entities;
 using Titan.Events;
 using Titan.Input;
+using Titan.Sound;
 using Titan.Systems;
 
 namespace Space.Splash;
@@ -24,12 +26,18 @@ internal struct SplashSystem : ISystem
     private Entity _splashEntity;
     private AssetsManager _assetsManager;
     private EventsWriter<GameStartEvent> _gameStartEvent;
+    private ObjectHandle<ISoundManager> _soundManager;
+    private Handle<Asset> _musicAsset;
+    private Handle<SoundClip> _clip;
+    private bool _isPlaying;
 
     public void Init(in SystemInitializer init)
     {
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
         _assetsManager = init.GetAssetsManager();
+        _soundManager = init.GetManagedApi<ISoundManager>();
+        
         _input = init.GetInputManager();
 
         _gameState = init.GetMutableResource<GameState>();
@@ -43,7 +51,7 @@ internal struct SplashSystem : ISystem
         {
             _splashEntity = _entityManager.Create();
             _componentManager.AddComponent(_splashEntity, Transform2D.Default);
-            _componentManager.AddComponent(_splashEntity, new Sprite
+            _componentManager.AddComponent(_splashEntity, Sprite.Default with
             {
                 Layer = 1,
                 Asset = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas),
@@ -51,6 +59,18 @@ internal struct SplashSystem : ISystem
                 Pivot = Vector2.One * 0.5f,
                 SourceRect = SpriteRectangles.PressE
             });
+            _musicAsset = _assetsManager.Load(AssetRegistry.Manifest.Textures.SplashScreenMusic);
+        }
+
+        if (_clip.IsInvalid && _assetsManager.IsLoaded(_musicAsset))
+        {
+            _clip = _assetsManager.GetAssetHandle<SoundClip>(_musicAsset);
+        }
+
+        if (_clip.IsValid && !_isPlaying)
+        {
+            _soundManager.Value.Play(_clip);
+            _isPlaying = true;
         }
 
         ref var transform = ref _transform[_splashEntity];

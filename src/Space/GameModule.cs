@@ -25,8 +25,7 @@ internal struct GameModule : IModule
             .AddComponent<PlayerComponent>(5, ComponentPoolType.Packed)
             .AddComponent<ShieldComponent>(10, ComponentPoolType.Packed)
             .AddComponent<InvaderComponent>(1000, ComponentPoolType.Packed)
-            .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size the the entity id.
-            //.AddSystem<TestSystem>()
+            .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size than the entity id.
             .AddSystem<SplashSystem>()
             .AddSystem<ShieldSpawnSystem>()
             .AddSystem<ShieldDamageSystem>()
@@ -49,15 +48,6 @@ internal struct GameModule : IModule
 
         return true;
     }
-
-    public static bool Init(IApp app)
-    {
-
-        return true;
-    }
-
-    public static bool Shutdown(IApp app)
-    {
-        return true;
-    }
+    public static bool Init(IApp app) => true;
+    public static bool Shutdown(IApp app) => true;
 }

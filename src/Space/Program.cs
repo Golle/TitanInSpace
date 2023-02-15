@@ -11,10 +11,13 @@ using Titan.Sound;
 #if DEBUG || CONSOLE_LOGGING
 using var _ = Logger.Start<ConsoleLogger>(10_000);
 
+//NOTE(Jens): Change this to false to run from the titanpak files.
+const bool UseRawAssets = true;
+
 var devAssetFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../assets");
 var devPakFolder = Path.Combine(devAssetFolder, "bin");
 var devEngineFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../../TitanEngine/");
-var devConfig = new AssetsDevConfiguration(devAssetFolder, devPakFolder, devEngineFolder);
+var devConfig = new AssetsDevConfiguration(devAssetFolder, devPakFolder, devEngineFolder, UseRawAssets);
 
 #else
 using var _ = Logger.Start(new FileLogger(Path.GetFullPath("logs", AppContext.BaseDirectory)), 10_000);
@@ -23,7 +26,7 @@ using var _ = Logger.Start(new FileLogger(Path.GetFullPath("logs", AppContext.Ba
 App.Create(new AppCreationArgs())
 #if DEBUG
     .AddConfig(devConfig)
-    
+
 #endif
     .AddModule<GraphicsModule>()
     .AddModule<InputModule>()
@@ -48,9 +51,8 @@ App.Create(new AppCreationArgs())
         Height = 768,
         Resizable = true
     })
-    
+
     .UseRunner<WindowedRunner>()
     .Build()
     .Run()
     ;
-

@@ -3,6 +3,7 @@ using Space.Assets;
 using Space.Events;
 using Space.Game;
 using Titan.Assets;
+using Titan.Audio;
 using Titan.BuiltIn.Components;
 using Titan.Core;
 using Titan.Core.Maths;
@@ -10,7 +11,6 @@ using Titan.ECS;
 using Titan.ECS.Entities;
 using Titan.Events;
 using Titan.Input;
-using Titan.Sound;
 using Titan.Systems;
 
 namespace Space.Splash;
@@ -26,9 +26,9 @@ internal struct SplashSystem : ISystem
     private Entity _splashEntity;
     private AssetsManager _assetsManager;
     private EventsWriter<GameStartEvent> _gameStartEvent;
-    private ObjectHandle<ISoundManager> _soundManager;
     private Handle<Asset> _musicAsset;
-    private Handle<SoundClip> _clip;
+    private AudioManager _audioManager;
+    
     private bool _isPlaying;
 
     public void Init(in SystemInitializer init)
@@ -36,13 +36,13 @@ internal struct SplashSystem : ISystem
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
         _assetsManager = init.GetAssetsManager();
-        _soundManager = init.GetManagedApi<ISoundManager>();
         
         _input = init.GetInputManager();
 
         _gameState = init.GetMutableResource<GameState>();
         _transform = init.GetMutableStorage<Transform2D>();
         _gameStartEvent = init.GetEventsWriter<GameStartEvent>();
+        _audioManager = init.GetAudioManager();
     }
 
     public void Update()
@@ -62,14 +62,10 @@ internal struct SplashSystem : ISystem
             _musicAsset = _assetsManager.Load(AssetRegistry.Manifest.Textures.SplashScreenMusic);
         }
 
-        if (_clip.IsInvalid && _assetsManager.IsLoaded(_musicAsset))
+        
+        if (!_isPlaying)
         {
-            _clip = _assetsManager.GetAssetHandle<SoundClip>(_musicAsset);
-        }
-
-        if (_clip.IsValid && !_isPlaying)
-        {
-            _soundManager.Value.Play(_clip);
+            _audioManager.Play(_musicAsset);
             _isPlaying = true;
         }
 

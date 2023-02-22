@@ -37,7 +37,11 @@ App.Create(new AppCreationArgs())
         //Debug = false,
         //Vsync = false,
         //AllowTearing = true,
+#if DEBUG
         Debug = true,
+#else
+        Debug = false,
+#endif
         Vsync = true,
         AllowTearing = false,
         ClearColor = ColorPalette.Darkest

@@ -35,4 +35,18 @@ internal static class SpriteRectangles
         new(96, 96, 11, 11),
         new(112, 96, 11, 11),
     };
+
+    public static readonly Rectangle[] Numbers =
+    {
+        new(0, 16, 8, 8),
+        new(9, 16, 8, 8),
+        new(18, 16, 8, 8),
+        new(27, 16, 8, 8),
+        new(36, 16, 8, 8),
+        new(45, 16, 8, 8),
+        new(54, 16, 8, 8),
+        new(63, 16, 8, 8),
+        new(72, 16, 8, 8),
+        new(81, 16, 8, 8)
+    };
 }

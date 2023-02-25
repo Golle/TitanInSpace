@@ -12,6 +12,7 @@ internal struct GameState : IResource
     public readonly float InvaderMaxShootingCooldown;
 
     public GameStateTypes CurrentState;
+    public int Score;
     public GameState(Size boardSize, uint invaderRows, uint invaderColumns, float invaderMinShootingCooldown, float invaderMaxShootingCooldown)
     {
         BoardSize = boardSize;

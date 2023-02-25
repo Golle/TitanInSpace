@@ -1,6 +1,7 @@
 using Space.Assets;
 using Space.Bullets;
 using Space.Game;
+using Space.Hud;
 using Space.Invaders;
 using Space.Player;
 using Space.Shields;
@@ -23,6 +24,7 @@ internal struct GameModule : IModule
     {
         builder
             .AddComponent<PlayerComponent>(5, ComponentPoolType.Packed)
+            .AddComponent<ScoreComponent>(5, ComponentPoolType.Packed)
             .AddComponent<ShieldComponent>(10, ComponentPoolType.Packed)
             .AddComponent<InvaderComponent>(1000, ComponentPoolType.Packed)
             .AddComponent<BulletComponent>(ComponentPoolType.Sparse) // bullet component has smaller size than the entity id.
@@ -40,6 +42,10 @@ internal struct GameModule : IModule
             .AddSystem<InvaderAnimationSystem>()
             .AddSystem<PlayerShootingSystem>()
             .AddSystem<BulletSystem>()
+            
+
+            .AddSystem<HudSystem>()
+            .AddSystem<ScoreDispaySystem>()
 
             .AddResource(new GameState(OriginalBoardSize, InvaderRows, InvaderColumns, InvaderMinShootingCooldown, InvaderMaxShootingCooldown) { CurrentState = GameStateTypes.Splash })
 

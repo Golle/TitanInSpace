@@ -9,6 +9,8 @@ using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.ECS.Queries;
 using Titan.Systems;
+using Titan.Audio;
+using Titan.Core;
 
 namespace Space.Invaders;
 
@@ -22,27 +24,35 @@ internal struct InvaderShootingSystem : ISystem
     private ReadOnlyResource<GameState> _gameState;
     private ReadOnlyResource<TimeStep> _timestep;
     private MutableStorage<InvaderComponent> _invader;
+    private AudioManager _audioManager;
+    private Handle<Asset> _laser;
 
     public void Init(in SystemInitializer init)
     {
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
         _assetManager = init.GetAssetsManager();
+        _audioManager = init.GetAudioManager();
         _transform = init.GetReadOnlyStorage<Transform2D>();
         _invader = init.GetMutableStorage<InvaderComponent>();
         _timestep = init.GetReadOnlyResource<TimeStep>();
 
         _gameState = init.GetReadOnlyResource<GameState>(false);
         _query = init.CreateQuery(new EntityQueryArgs().With<InvaderComponent>().With<Transform2D>());
+
     }
 
     public void Update()
     {
+        if (_laser.IsInvalid)
+        {
+            _laser = _assetManager.Load(AssetRegistry.Manifest.Textures.Laser);
+        }
         // calculate the part of the max that is left and use that to determine the change of shooting
         ref readonly var gameState = ref _gameState.Get();
         var totalInvaders = gameState.InvaderColumns * gameState.InvaderRows;
         //NOTE(Jens): 0 chance of invaders shooting if the player hasn't killed one :) not indended.
-        var shotProbability = (totalInvaders - _query.Count) / (float)totalInvaders; 
+        var shotProbability = (totalInvaders - _query.Count) / (float)totalInvaders;
 
         var time = _timestep.Get().DeltaTimeSecondsF;
         foreach (ref readonly var entity in _query)
@@ -87,5 +97,6 @@ internal struct InvaderShootingSystem : ISystem
             CollidesWith = CollisionCategories.Shield | CollisionCategories.Player
         });
         _componentManager.AddComponent(bullet, new BulletComponent { Down = true });
+        _audioManager.PlayOnce(_laser, PlaybackSettings.Default with { Volume = 0.3f, Frequency = 3f});
     }
 }

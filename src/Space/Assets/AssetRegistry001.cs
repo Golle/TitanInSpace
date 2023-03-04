@@ -12,9 +12,9 @@ internal static partial class AssetRegistry
         public static Titan.Assets.AssetDescriptor[] AssetDescriptors { get; } =
         {
             new() { Id = 0, ManifestId = 1, Reference = { Offset = 0, Size = 65536}, Type = Titan.Assets.AssetDescriptorType.Texture, Image = new() { Format = 28, Height = 128, Width = 128, Stride = 512 } },
-            new() { Id = 1, ManifestId = 1, Reference = { Offset = 65536, Size = 5644800}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { } },
-            new() { Id = 2, ManifestId = 1, Reference = { Offset = 5710336, Size = 2822400}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { } },
-            new() { Id = 3, ManifestId = 1, Reference = { Offset = 8532736, Size = 27654}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { } },
+            new() { Id = 1, ManifestId = 1, Reference = { Offset = 65536, Size = 5644800}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { Channels = 2, BitsPerSample = 16, SamplesPerSecond = 44100 } },
+            new() { Id = 2, ManifestId = 1, Reference = { Offset = 5710336, Size = 2822400}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { Channels = 2, BitsPerSample = 16, SamplesPerSecond = 44100 } },
+            new() { Id = 3, ManifestId = 1, Reference = { Offset = 8532736, Size = 27654}, Type = Titan.Assets.AssetDescriptorType.Audio, Audio = new() { Channels = 1, BitsPerSample = 16, SamplesPerSecond = 44100 } },
         };
 #if DEBUG
         public static object[] RawAssets { get; } =

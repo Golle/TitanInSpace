@@ -19,24 +19,24 @@ internal struct SplashSystem : ISystem
 {
     private EntityManager _entityManager;
     private ComponentManager _componentManager;
+    private AudioManager _audioManager;
+    private InputManager _input;
+    private AssetsManager _assetsManager;
+
     private MutableResource<GameState> _gameState;
     private MutableStorage<Transform2D> _transform;
-    private InputManager _input;
-
-    private Entity _splashEntity;
-    private AssetsManager _assetsManager;
     private EventsWriter<GameStartEvent> _gameStartEvent;
+
     private Handle<Asset> _musicAsset;
-    private AudioManager _audioManager;
-    
-    private bool _isPlaying;
+    private Entity _splashEntity;
+    private Handle<Audio> _music;
 
     public void Init(in SystemInitializer init)
     {
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
         _assetsManager = init.GetAssetsManager();
-        
+
         _input = init.GetInputManager();
 
         _gameState = init.GetMutableResource<GameState>();
@@ -44,7 +44,6 @@ internal struct SplashSystem : ISystem
         _gameStartEvent = init.GetEventsWriter<GameStartEvent>();
         _audioManager = init.GetAudioManager();
     }
-
     public void Update()
     {
         if (_splashEntity.IsInvalid)
@@ -60,13 +59,7 @@ internal struct SplashSystem : ISystem
                 SourceRect = SpriteRectangles.PressE
             });
             _musicAsset = _assetsManager.Load(AssetRegistry.Manifest.Textures.SplashScreenMusic);
-        }
-
-        
-        if (!_isPlaying)
-        {
-            _audioManager.Play(_musicAsset);
-            _isPlaying = true;
+            _music = _audioManager.CreateAndPlay(_musicAsset, PlaybackSettings.Default with { Volume = 1f, Frequency = 1f, Loop = true });
         }
 
         ref var transform = ref _transform[_splashEntity];
@@ -77,10 +70,23 @@ internal struct SplashSystem : ISystem
             _gameState.Get().CurrentState = GameStateTypes.Startup;
             _entityManager.Destroy(_splashEntity);
             _splashEntity = Entity.Invalid;
-            
+
             _gameStartEvent.Send(new GameStartEvent());
         }
-    }
 
+        if (_input.IsKeyPressed(KeyCode.Q))
+        {
+            _audioManager.Stop(_music);
+        }
+
+        if (_input.IsKeyPressed(KeyCode.F))
+        {
+            _audioManager.Pause(_music);
+        }
+        if (_input.IsKeyPressed(KeyCode.G))
+        {
+            _audioManager.Resume(_music);
+        }
+    }
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Splash;
 }

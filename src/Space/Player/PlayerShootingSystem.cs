@@ -3,8 +3,10 @@ using Space.Assets;
 using Space.Bullets;
 using Space.Game;
 using Titan.Assets;
+using Titan.Audio;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
+using Titan.Core;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.ECS.Queries;
@@ -22,11 +24,15 @@ internal struct PlayerShootingSystem : ISystem
     private AssetsManager _assetManager;
     private ComponentManager _componentManager;
     private EntityManager _entityManager;
+    private AudioManager _audioManager;
     private ReadOnlyResource<TimeStep> _timestep;
     private ReadOnlyResource<GameState> _gameState;
 
     private const float TimeBetweenShots = 0.2f;
     private float _timeSinceLastShot;
+
+    private Handle<Asset> _laser;
+    
 
     public void Init(in SystemInitializer init)
     {
@@ -37,12 +43,17 @@ internal struct PlayerShootingSystem : ISystem
         _assetManager = init.GetAssetsManager();
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
+        _audioManager = init.GetAudioManager();
         _timestep = init.GetReadOnlyResource<TimeStep>();
         _gameState = init.GetReadOnlyResource<GameState>();
     }
 
     public void Update()
     {
+        if (_laser.IsInvalid)
+        {
+            _laser = _assetManager.Load(AssetRegistry.Manifest.Textures.Laser);
+        }
         ref readonly var timestep = ref _timestep.Get();
 
         _timeSinceLastShot -= timestep.DeltaTimeSecondsF;
@@ -76,6 +87,7 @@ internal struct PlayerShootingSystem : ISystem
             CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader
         });
         _componentManager.AddComponent<BulletComponent>(bullet, default);
+        _audioManager.PlayOnce(_laser, PlaybackSettings.Default with{Frequency = 2f, Volume = 1f});
     }
 
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Playing;

@@ -59,7 +59,11 @@ internal struct SplashSystem : ISystem
                 SourceRect = SpriteRectangles.PressE
             });
             _musicAsset = _assetsManager.Load(AssetRegistry.Manifest.Textures.SplashScreenMusic);
-            _music = _audioManager.CreateAndPlay(_musicAsset, PlaybackSettings.Default with { Volume = 1f, Frequency = 1f, Loop = true });
+            if (_music.IsInvalid)
+            {
+                // only start the music if it's not playing
+                _music = _audioManager.CreateAndPlay(_musicAsset, PlaybackSettings.Default with { Volume = 1f, Frequency = 1f, Loop = true });
+            }
         }
 
         ref var transform = ref _transform[_splashEntity];

@@ -27,6 +27,7 @@ internal struct HudSystem : ISystem
     private EntityManager _entityManager;
     private ComponentManager _componentManager;
 
+    private const short HudLayer = 1_000;
     public void Init(in SystemInitializer init)
     {
         _assetManager = init.GetAssetsManager();
@@ -74,7 +75,8 @@ internal struct HudSystem : ISystem
             {
                 Asset = asset,
                 Color = ColorPalette.Middle,
-                SourceRect = SpriteRectangles.Numbers[Random.Shared.Next(0, 9)]
+                SourceRect = SpriteRectangles.Numbers[Random.Shared.Next(0, 9)],
+                Layer = HudLayer
             });
         }
     }
@@ -99,7 +101,8 @@ internal struct HudSystem : ISystem
             {
                 Asset = asset,
                 Color = ColorPalette.Lighter,
-                SourceRect = SpriteRectangles.Player
+                SourceRect = SpriteRectangles.Player,
+                Layer = HudLayer
             });
         }
 

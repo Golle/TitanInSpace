@@ -14,6 +14,7 @@ public static class ColorPalette
 internal static class SpriteRectangles
 {
     public static readonly Rectangle PressE = new(0, 80, 42, 8);
+    public static readonly Rectangle GameOver = new(48, 80, 56, 8);
 
     public static readonly Rectangle Player = new(0, 48, 11, 7);
 

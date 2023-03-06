@@ -15,6 +15,7 @@ internal struct PlayerDamageSystem : ISystem
     private EntityManager _entityManager;
     private MutableResource<GameState> _gameState;
     private EventsWriter<GameEndedEvent> _gameEnded;
+    private EventsWriter<PlayerRespawnEvent> _playerRespawn;
 
     public void Init(in SystemInitializer init)
     {
@@ -23,6 +24,7 @@ internal struct PlayerDamageSystem : ISystem
         _playerHit = init.GetEventsReader<PlayerHitEvent>();
         _gameState = init.GetMutableResource<GameState>();
         _gameEnded = init.GetEventsWriter<GameEndedEvent>();
+        _playerRespawn = init.GetEventsWriter<PlayerRespawnEvent>();
     }
 
     public void Update()
@@ -33,7 +35,12 @@ internal struct PlayerDamageSystem : ISystem
         var livesLeft = --_gameState.Get().Lives;
         if (livesLeft <= 0)
         {
-            _gameEnded.Send(new GameEndedEvent());
+            _gameEnded.Send(default);
+            _gameState.Get().CurrentState = GameStateTypes.EndGame;
+        }
+        else
+        {
+            _playerRespawn.Send(default);
         }
     }
 

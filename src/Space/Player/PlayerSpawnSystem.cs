@@ -5,7 +5,6 @@ using Space.Assets;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
-using Titan.Core.Logging;
 using Titan.ECS;
 using Titan.Events;
 using Titan.Systems;
@@ -16,7 +15,7 @@ internal struct PlayerSpawnSystem : ISystem
 {
     private ReadOnlyResource<GameState> _gameState;
     private ReadOnlyResource<TimeStep> _time;
-    private EventsReader<PlayerHitEvent> _playerHitEvent;
+    private EventsReader<PlayerRespawnEvent> _playerRespawn;
     private EventsReader<GameStartEvent> _gameStart;
     private EntityManager _entityManager;
     private ComponentManager _componentManager;
@@ -27,7 +26,7 @@ internal struct PlayerSpawnSystem : ISystem
     public void Init(in SystemInitializer init)
     {
         _gameState = init.GetReadOnlyResource<GameState>();
-        _playerHitEvent = init.GetEventsReader<PlayerHitEvent>();
+        _playerRespawn = init.GetEventsReader<PlayerRespawnEvent>();
         _gameStart = init.GetEventsReader<GameStartEvent>();
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
@@ -40,22 +39,20 @@ internal struct PlayerSpawnSystem : ISystem
         if (_gameStart.HasEvents())
         {
             SpawnPlayer();
-            Logger.Error("SPAWN");
             return;
         }
 
-        if (_respawnTimer < 0)
+        if (_playerRespawn.HasEvents())
+        {
+            _respawnTimer = 2f;
+            return;
+        }
+
+        //NOTE(Jens): Do the calculation first because if it goes below 0 this frame the system will be disabled in the next.
+        _respawnTimer -= _time.Get().DeltaTimeSecondsF;
+        if (_respawnTimer < 0.0f)
         {
             SpawnPlayer();
-            _respawnTimer = 0;
-        }
-        else if (_respawnTimer > 0)
-        {
-            _respawnTimer -= _time.Get().DeltaTimeSecondsF;
-        }
-        else if (_playerHitEvent.HasEvents())
-        {
-            _respawnTimer = 3f;
         }
     }
 
@@ -80,5 +77,5 @@ internal struct PlayerSpawnSystem : ISystem
             Size = new(SpriteRectangles.Player.Width, SpriteRectangles.Player.Height)
         });
     }
-    public bool ShouldRun() => _gameState.Get().Lives >= 0;
+    public bool ShouldRun() => _respawnTimer > 0.0f || _gameStart.HasEvents() || _playerRespawn.HasEvents();
 }

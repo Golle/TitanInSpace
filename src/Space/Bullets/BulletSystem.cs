@@ -2,6 +2,7 @@ using Space.Game;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
 using Titan.ECS;
+using Titan.ECS.Entities;
 using Titan.ECS.Queries;
 using Titan.Systems;
 
@@ -30,6 +31,15 @@ internal struct BulletSystem : ISystem
 
     public void Update()
     {
+        if (_gameState.Get().CurrentState == GameStateTypes.EndGame)
+        {
+            foreach (ref readonly var entity in _query)
+            {
+                _entityManager.Destroy(entity);
+            }
+            return;
+        }
+
         var maxHeight = _gameState.Get().BoardSize.Height;
         var timestep = _timestep.Get();
         foreach (ref readonly var entity in _query)
@@ -46,4 +56,6 @@ internal struct BulletSystem : ISystem
             }
         }
     }
+
+    public bool ShouldRun() => _query.HasEntities();
 }

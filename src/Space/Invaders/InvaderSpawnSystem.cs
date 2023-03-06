@@ -93,9 +93,9 @@ internal struct InvaderSpawnSystem : ISystem
         });
         _componentsManager.AddComponent(entity, new BoxCollider2D
         {
-            Size = new (SpriteRectangles.Monster1_0.Width, SpriteRectangles.Monster1_0.Height),
+            Size = new(SpriteRectangles.Monster1_0.Width, SpriteRectangles.Monster1_0.Height),
             Category = CollisionCategories.Invader
-});
+        });
         _entityManager.Attach(_enemyContainer, entity);
     }
 

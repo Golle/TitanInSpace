@@ -90,5 +90,5 @@ internal struct PlayerShootingSystem : ISystem
         _audioManager.PlayOnce(_laser, PlaybackSettings.Default with{Frequency = 2f, Volume = 1f});
     }
 
-    public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Playing;
+    public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Playing && _query.HasEntities();
 }

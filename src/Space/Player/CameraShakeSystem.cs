@@ -1,11 +1,10 @@
 using System.Numerics;
+using Space.Events;
 using Titan.BuiltIn.Components;
-using Titan.BuiltIn.Events;
 using Titan.BuiltIn.Resources;
 using Titan.ECS;
 using Titan.ECS.Queries;
 using Titan.Events;
-using Titan.Input;
 using Titan.Systems;
 
 namespace Space.Player;
@@ -15,31 +14,25 @@ internal struct CameraShakeSystem : ISystem
     private EntityQuery _cameraQuery;
     private MutableStorage<Transform2D> _transform;
     private EntityManager _entityManager;
-    private InputManager _input;
     private ReadOnlyResource<TimeStep> _timestep;
+    private EventsReader<PlayerHitEvent> _playerHit;
 
     private float _shakeTimer;
-    private EventsReader<Collision2DEnter> _enter;
 
     public void Init(in SystemInitializer init)
     {
         _transform = init.GetMutableStorage<Transform2D>();
         _entityManager = init.GetEntityManager();
-        _input = init.GetInputManager();
         _cameraQuery = init.CreateQuery(new EntityQueryArgs().With<Camera2D>().With<Transform2D>());
         _timestep = init.GetReadOnlyResource<TimeStep>();
-        _enter = init.GetEventsReader<Collision2DEnter>();
+        _playerHit = init.GetEventsReader<PlayerHitEvent>();
     }
 
     public void Update()
     {
-        foreach (ref readonly var  @event in _enter)
+        if (_playerHit.HasEvents())
         {
-            if (@event.Target.Category == CollisionCategories.Player)
-            {
-                _shakeTimer = 0.4f;
-                break;
-            }
+            _shakeTimer = 0.4f;
         }
 
         if (_shakeTimer <= 0)
@@ -47,7 +40,7 @@ internal struct CameraShakeSystem : ISystem
             return;
         }
         _shakeTimer -= _timestep.Get().DeltaTimeSecondsF;
-        
+
         foreach (ref readonly var entity in _cameraQuery)
         {
             var parent = _entityManager.GetParent(entity);
@@ -65,7 +58,7 @@ internal struct CameraShakeSystem : ISystem
             {
                 transform.Position = Vector2.Zero;
             }
-            
+
         }
     }
 }

@@ -40,7 +40,7 @@ internal struct SplashSystem : ISystem
         _input = init.GetInputManager();
 
         _gameState = init.GetMutableResource<GameState>();
-        _transform = init.GetMutableStorage<Transform2D>();
+        _transform = init.GetMutableStorage<Transform2D>(trackDependency: false);
         _gameStartEvent = init.GetEventsWriter<GameStartEvent>();
         _audioManager = init.GetAudioManager();
     }

@@ -14,6 +14,7 @@ using Titan.Systems;
 namespace Space.Hud;
 
 internal struct ScoreComponent : IComponent { }
+internal struct LivesComponent : IComponent { }
 internal struct HudSystem : ISystem
 {
     private AssetsManager _assetManager;
@@ -41,7 +42,12 @@ internal struct HudSystem : ISystem
     {
         if (_gameStart.HasEvents())
         {
-            SpawnScoreBoard();
+            Debug.Assert(_hudEntity.IsInvalid);
+            _hudEntity = _entityManager.Create();
+            _componentManager.AddComponent(_hudEntity, Transform2D.Default);
+
+            SpawnScoreBoard(_hudEntity);
+            SpawnPlayerLives(_hudEntity);
         }
 
         if (_gameEnded.HasEvents() && _hudEntity.IsValid)
@@ -50,19 +56,19 @@ internal struct HudSystem : ISystem
         }
     }
 
-    private void SpawnScoreBoard()
+    private void SpawnScoreBoard(in Entity parent)
     {
         var boardSize = _gameState.Get().BoardSize;
         var heightOffset = boardSize.Height - 10;
         var widthOffset = boardSize.Width / 2;
-        Debug.Assert(_hudEntity.IsInvalid);
-        _hudEntity = _entityManager.Create();
-        _componentManager.AddComponent(_hudEntity, Transform2D.Default with { Position = new Vector2(widthOffset, heightOffset) });
-        _componentManager.AddComponent<ScoreComponent>(_hudEntity);
+
+        var scoreBoard = _entityManager.CreateChild(parent);
+        _componentManager.AddComponent(scoreBoard, Transform2D.Default with { Position = new Vector2(widthOffset, heightOffset) });
+        _componentManager.AddComponent<ScoreComponent>(scoreBoard);
         var asset = _assetManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
         for (var i = -2; i < 3; ++i)
         {
-            var entity = _entityManager.CreateChild(_hudEntity);
+            var entity = _entityManager.CreateChild(scoreBoard);
             _componentManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(i * 10, 0) });
             _componentManager.AddComponent(entity, Sprite.Default with
             {
@@ -71,6 +77,32 @@ internal struct HudSystem : ISystem
                 SourceRect = SpriteRectangles.Numbers[Random.Shared.Next(0, 9)]
             });
         }
+    }
+
+    private void SpawnPlayerLives(in Entity parent)
+    {
+        const uint heightOffset = 10;
+        const uint widthOffset = 10;
+        var lives = _gameState.Get().MaxLives;
+        var asset = _assetManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
+
+        
+        var livesEntity = _entityManager.CreateChild(parent);
+        _componentManager.AddComponent(livesEntity, Transform2D.Default with { Position = new(widthOffset, heightOffset) });
+        //NOTE(Jens): This is such a bad solution :| but we need better support in the engine for this so we don't need empty components. Maybe Tags?
+        _componentManager.AddComponent<LivesComponent>(livesEntity);
+        for (var i = 0; i < lives; ++i)
+        {
+            var entity = _entityManager.CreateChild(livesEntity);
+            _componentManager.AddComponent(entity, Transform2D.Default with { Position = new(widthOffset + i * 20, heightOffset) });
+            _componentManager.AddComponent(entity, Sprite.Default with
+            {
+                Asset = asset,
+                Color = ColorPalette.Lighter,
+                SourceRect = SpriteRectangles.Player
+            });
+        }
+
     }
 
     public bool ShouldRun()

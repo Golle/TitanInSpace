@@ -1,10 +1,7 @@
 using System.Numerics;
 using Space.Assets;
-using Space.Invaders;
-using Space.Player;
 using Titan.Assets;
 using Titan.BuiltIn.Components;
-using Titan.Core;
 using Titan.Core.Maths;
 using Titan.ECS;
 using Titan.Systems;
@@ -28,41 +25,25 @@ internal struct GameStartupSystem : ISystem
 
     public void Update()
     {
-        // Load the shared sprite sheet
-        var spriteSheet = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
 
-        // Add the player
-        {
-            var player = _entityManager.Create();
 
-            _componentsManager.AddComponent(player, Transform2D.Default with { Position = new Vector2(_gameState.Get().BoardSize.Width / 2f, 40) });
-            _componentsManager.AddComponent(player, new PlayerComponent { StartSpeed = 50f, MaxSpeed = 130f, Width = SpriteRectangles.Player.Width });
-            var pivot = new Vector2(0.5f, 0);
-            _componentsManager.AddComponent(player, new Sprite
-            {
-                Asset = spriteSheet,
-                Color = ColorPalette.Lighter,
-                SourceRect = SpriteRectangles.Player,
-                Pivot = pivot
-            });
-            _componentsManager.AddComponent(player, BoxCollider2D.Default with
-            {
-                Category = CollisionCategories.Player,
-                Pivot = pivot,
-                Size = new(SpriteRectangles.Player.Width, SpriteRectangles.Player.Height)
-            });
-        }
+        ref var gameState = ref _gameState.Get();
 
-        // Spawn enemies
-        //SpawnEnemies(3, 11, spriteSheet, _gameState.Get().BoardSize);
+        // Reset the lives counter
+        gameState.Lives = (int)gameState.MaxLives;
+        // Reset score
+        gameState.Score = 0;
+
 
 
         // Debug background
 #if DEBUG
         {
+            // Load the shared sprite sheet
+            var spriteSheet = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas);
             var entity = _entityManager.Create();
 
-            _componentsManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(0, 0), Scale = new Vector2(_gameState.Get().BoardSize.Width, _gameState.Get().BoardSize.Height) });
+            _componentsManager.AddComponent(entity, Transform2D.Default with { Position = new Vector2(0, 0), Scale = new Vector2(gameState.BoardSize.Width, gameState.BoardSize.Height) });
             _componentsManager.AddComponent(entity, new Sprite
             {
                 Asset = spriteSheet,
@@ -75,49 +56,7 @@ internal struct GameStartupSystem : ISystem
 #endif
 
         // change the game state
-        _gameState.Get().CurrentState = GameStateTypes.Playing;
-    }
-
-    private void SpawnEnemies(int rows, int columns, Handle<Asset> asset, in Size boardSize)
-    {
-        const int topOffset = 10;
-        const int rowHeight = 20;
-
-        const int columnWidth = 20;
-
-        var totalWidth = columnWidth * columns + 1;
-        var halfWidth = totalWidth / 2f;
-        var startOffset = boardSize.Width / 2f - halfWidth + columnWidth / 2f;
-
-        for (var row = 0; row < rows; row++)
-        {
-            for (var column = 0; column < columns; column++)
-            {
-                var entity = _entityManager.Create();
-                var enemy = new InvaderComponent
-                {
-                    Sprite1 = column % 2 == 0 ? SpriteRectangles.Monster1_0 : SpriteRectangles.Monster2_0,
-                    Sprite2 = column % 2 == 0 ? SpriteRectangles.Monster1_1 : SpriteRectangles.Monster2_1,
-                };
-                _componentsManager.AddComponent(entity, enemy);
-                _componentsManager.AddComponent(entity, Transform2D.Default with
-                {
-                    Position = new Vector2(columnWidth * column + startOffset, boardSize.Height - rowHeight * row - topOffset)
-                });
-                _componentsManager.AddComponent(entity, new Sprite
-                {
-                    Asset = asset,
-                    Color = Random.Shared.Next(0, 2) switch
-                    {
-                        0 => ColorPalette.Lighter,
-                        1 => ColorPalette.Darker,
-                        _ => ColorPalette.Middle,
-                    },
-                    SourceRect = enemy.Sprite1,
-                    Pivot = new Vector2(0.5f, 1)
-                });
-            }
-        }
+        gameState.CurrentState = GameStateTypes.Playing;
     }
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Startup;
 }

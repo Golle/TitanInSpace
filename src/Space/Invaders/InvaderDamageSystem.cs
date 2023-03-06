@@ -1,4 +1,6 @@
+using Space.Events;
 using Space.Game;
+using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Events;
 using Titan.ECS;
 using Titan.Events;
@@ -11,12 +13,16 @@ internal struct InvaderDamageSystem : ISystem
     private EntityManager _entityManager;
     private EventsReader<Collision2DEnter> _collisionEnter;
     private MutableResource<GameState> _gameState;
+    private EventsWriter<InvaderDestroyedEvent> _invaderDestroyed;
+    private ReadOnlyStorage<Transform2D> _transform;
 
     public void Init(in SystemInitializer init)
     {
         _collisionEnter = init.GetEventsReader<Collision2DEnter>();
         _entityManager = init.GetEntityManager();
         _gameState = init.GetMutableResource<GameState>();
+        _invaderDestroyed = init.GetEventsWriter<InvaderDestroyedEvent>();
+        _transform = init.GetReadOnlyStorage<Transform2D>();
     }
 
     public void Update()
@@ -27,7 +33,13 @@ internal struct InvaderDamageSystem : ISystem
             {
                 _entityManager.Destroy(@event.Source.Entity);
                 _entityManager.Destroy(@event.Target.Entity);
+
                 _gameState.Get().Score += 10;
+                _invaderDestroyed.Send(new InvaderDestroyedEvent
+                {
+                    Type = InvaderType.Basic,
+                    Position = _transform[@event.Target.Entity].GetWorldPosition()
+                });
             }
         }
     }

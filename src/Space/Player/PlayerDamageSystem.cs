@@ -31,16 +31,20 @@ internal struct PlayerDamageSystem : ISystem
     {
         Debug.Assert(_entities.Count == 1, "More than a single player, this is not correct.");
         _entityManager.Destroy(_entities[0]);
-
-        var livesLeft = --_gameState.Get().Lives;
-        if (livesLeft <= 0)
+        foreach (ref readonly var @event in _playerHit)
         {
-            _gameEnded.Send(default);
-            _gameState.Get().CurrentState = GameStateTypes.EndGame;
-        }
-        else
-        {
-            _playerRespawn.Send(default);
+            var livesLeft = --_gameState.Get().Lives;
+            if (livesLeft <= 0 || @event.CollisionWithInvader)
+            {
+                _gameEnded.Send(default);
+                _gameState.Get().CurrentState = GameStateTypes.EndGame;
+            }
+            else
+            {
+                _playerRespawn.Send(default);
+            }
+            // only look for a single event.
+            break;
         }
     }
 

@@ -1,11 +1,10 @@
-using Titan.Core.Maths;
 using Titan.ECS.Components;
 
 namespace Space.Invaders;
 
 internal struct InvaderComponent : IComponent
 {
-    public Rectangle Sprite1, Sprite2;
+    public InvaderType Type;
     public int SpriteIndex;
     public float InvaderWidth;
     public float TimeElapsed;

@@ -5,16 +5,23 @@ using Titan.Systems;
 
 namespace Space.Invaders;
 
+internal enum InvaderType
+{
+    Basic = 0,
+    Advanced = 1,
+    Spaceship = 2
+}
+
 internal struct InvaderAnimationSystem : ISystem
 {
     private EntityQuery _query;
     private ReadOnlyResource<TimeStep> _timeStep;
-    private MutableStorage<InvaderComponent> _enemy;
+    private MutableStorage<InvaderComponent> _invader;
     private MutableStorage<Sprite> _sprite;
 
     public void Init(in SystemInitializer init)
     {
-        _enemy = init.GetMutableStorage<InvaderComponent>();
+        _invader = init.GetMutableStorage<InvaderComponent>();
         _sprite = init.GetMutableStorage<Sprite>();
         _query = init.CreateQuery(new EntityQueryArgs().With<InvaderComponent>().With<Sprite>());
         _timeStep = init.GetReadOnlyResource<TimeStep>();
@@ -25,15 +32,15 @@ internal struct InvaderAnimationSystem : ISystem
         ref readonly var timestep = ref _timeStep.Get();
         foreach (ref readonly var entity in _query)
         {
-            ref var enemy = ref _enemy[entity];
-            enemy.TimeElapsed += timestep.DeltaTimeSecondsF;
+            ref var invader = ref _invader[entity];
+            invader.TimeElapsed += timestep.DeltaTimeSecondsF;
 
-            if (enemy.TimeElapsed >= 0.25f)
+            if (invader.TimeElapsed >= 0.25f)
             {
-                enemy.SpriteIndex = (enemy.SpriteIndex + 1) % 2;
+                invader.SpriteIndex = (invader.SpriteIndex + 1) % 2;
                 ref var sprite = ref _sprite[entity];
-                sprite.SourceRect = enemy.SpriteIndex == 0 ? enemy.Sprite1 : enemy.Sprite2;
-                enemy.TimeElapsed = 0;
+                sprite.SourceRect = SpriteRectangles.Invaders[(int)invader.Type][invader.SpriteIndex];
+                invader.TimeElapsed = 0;
             }
         }
     }

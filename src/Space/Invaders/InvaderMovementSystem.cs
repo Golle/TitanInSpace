@@ -63,7 +63,8 @@ internal struct InvaderMovementSystem : ISystem
             _ => _direction
         };
 
-        var invaderWidth = SpriteRectangles.Monster1_0.Width;
+        //NOTE(Jens): this is not a good solution, we should have a constant for this
+        var invaderWidth = SpriteRectangles.Invaders[0][0].Width;
         var nextDirection = _direction;
         foreach (ref readonly var entity in _query)
         {

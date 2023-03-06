@@ -31,6 +31,7 @@ internal struct GameModule : IModule
             .AddComponent<InvaderComponent>(100, ComponentPoolType.Packed)
             .AddComponent<BulletComponent>(100, ComponentPoolType.Packed) // bullet component has smaller size than the entity id.
             .AddComponent<LivesComponent>(5, ComponentPoolType.Packed)
+            .AddComponent<ExplosionComponent>(100, ComponentPoolType.Packed)
 
             .AddSystem<SplashSystem>()
             .AddSystem<GameOverSystem>()
@@ -57,6 +58,7 @@ internal struct GameModule : IModule
             .AddSystem<BulletSystem>()
 
             .AddSystem<CameraShakeSystem>()
+            .AddSystem<ExplosionSystem>()
 
             .AddSystem<HudSystem>()
             .AddSystem<ScoreDispaySystem>()

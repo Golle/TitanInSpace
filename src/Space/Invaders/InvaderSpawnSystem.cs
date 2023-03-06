@@ -51,7 +51,8 @@ internal struct InvaderSpawnSystem : ISystem
 
         const uint invaderBlockSize = 18u;
         const uint invaderBlockHeight = 18u;
-        var invaderHalfSize = SpriteRectangles.Monster2_0.Width / 2f;
+        const uint invaderWidth = 12;
+        const uint invaderHalfSize = invaderWidth / 2;
         var boardWidth = _gameState.Get().BoardSize.Width;
         var offsetX = (boardWidth - gameState.InvaderColumns * invaderBlockSize + invaderHalfSize) / 2f;
         const uint offsetY = 220;
@@ -67,6 +68,7 @@ internal struct InvaderSpawnSystem : ISystem
 
     private void SpawnInvader(float x, float y, in GameState gameState)
     {
+        //NOTE(Jens): we need to rework how this works to support different enemy types
         var entity = _entityManager.Create();
         _componentsManager.AddComponent(entity, Transform2D.Default with
         {
@@ -75,7 +77,7 @@ internal struct InvaderSpawnSystem : ISystem
         _componentsManager.AddComponent(entity, Sprite.Default with
         {
             Asset = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas),
-            SourceRect = SpriteRectangles.Monster1_0,
+            SourceRect = SpriteRectangles.Invaders[0][0],
             Pivot = new Vector2(0),
             Color = Random.Shared.Next(0, 3) switch
             {
@@ -86,15 +88,14 @@ internal struct InvaderSpawnSystem : ISystem
         });
         _componentsManager.AddComponent(entity, new InvaderComponent
         {
-            Sprite1 = SpriteRectangles.Monster1_0,
-            Sprite2 = SpriteRectangles.Monster1_1,
             ShootingCooldown = gameState.InvaderMinShootingCooldown,
-            InvaderWidth = SpriteRectangles.Monster1_0.Width
+            InvaderWidth = SpriteRectangles.Invaders[0][0].Width
         });
         _componentsManager.AddComponent(entity, new BoxCollider2D
         {
-            Size = new(SpriteRectangles.Monster1_0.Width, SpriteRectangles.Monster1_0.Height),
-            Category = CollisionCategories.Invader
+            Size = new(SpriteRectangles.Invaders[0][0].Width, SpriteRectangles.Invaders[0][0].Height),
+            Category = CollisionCategories.Invader,
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Player
         });
         _entityManager.Attach(_enemyContainer, entity);
     }

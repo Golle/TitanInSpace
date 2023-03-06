@@ -26,7 +26,12 @@ internal struct ShieldDamageSystem : ISystem
     {
         foreach (ref readonly var @event in _collisionEnter)
         {
-            if (@event.Source.Category == CollisionCategories.Bullet && @event.Target.Category == CollisionCategories.Shield)
+            if (@event.Target.Category != CollisionCategories.Shield)
+            {
+                continue;
+            }
+
+            if (@event.Source.Category == CollisionCategories.Bullet)
             {
                 var shieldEntity = @event.Target.Entity;
                 ref var shield = ref _shields[shieldEntity];
@@ -40,6 +45,10 @@ internal struct ShieldDamageSystem : ISystem
                     sprite.SourceRect = SpriteRectangles.Shields[shield.Damage];
                 }
                 _entityManager.Destroy(@event.Source.Entity);
+            }
+            else if (@event.Source.Category == CollisionCategories.Invader)
+            {
+                _entityManager.Destroy(@event.Target.Entity);
             }
         }
     }

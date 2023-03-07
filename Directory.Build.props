@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    </PropertyGroup>
+    <PropertyGroup>
+        <Version>0.0.1</Version>
+        <FileVersion>0.0.1</FileVersion>
+        <Copyright>Golle Sweden AB 2023</Copyright>
+        <Product>Titan in Space</Product>
+        <Company>Golle Sweden AB</Company>
+    </PropertyGroup>
+</Project>

@@ -18,8 +18,9 @@ internal struct InvaderSpawnSystem : ISystem
     private AssetsManager _assetsManager;
     private ComponentManager _componentsManager;
     private EventsReader<GameStartEvent> _gameStart;
-    private ReadOnlyResource<GameState> _gameState;
     private EventsReader<GameEndedEvent> _gameEnded;
+    private EventsReader<LevelCompletedEvent> _levelCompleted;
+    private ReadOnlyResource<GameState> _gameState;
 
     private Entity _enemyContainer;
 
@@ -30,17 +31,20 @@ internal struct InvaderSpawnSystem : ISystem
         _componentsManager = init.GetComponentManager();
         _gameStart = init.GetEventsReader<GameStartEvent>();
         _gameEnded = init.GetEventsReader<GameEndedEvent>();
+        _levelCompleted = init.GetEventsReader<LevelCompletedEvent>();
         _gameState = init.GetReadOnlyResource<GameState>();
     }
 
     public void Update()
     {
+        //NOTE(Jens): This system will only run on GameStart, GameEnded. It's safe to destroy the entity container every "reset"
+        if (_enemyContainer.IsValid)
+        {
+            _entityManager.Destroy(ref _enemyContainer);
+        }
+
         if (_gameEnded.HasEvents())
         {
-            if (_enemyContainer.IsValid)
-            {
-                _entityManager.Destroy(ref _enemyContainer);
-            }
             return;
         }
 
@@ -101,5 +105,5 @@ internal struct InvaderSpawnSystem : ISystem
     }
 
 
-    public bool ShouldRun() => _gameStart.HasEvents() || _gameEnded.HasEvents();
+    public bool ShouldRun() => _gameStart.HasEvents() || _gameEnded.HasEvents() || _levelCompleted.HasEvents();
 }

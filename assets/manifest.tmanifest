@@ -3,8 +3,8 @@
   "name": "Manifest",
   "textures": [
     {
-      "path": "textures\\game_art.aseprite",
       "type": "Aseprite",
+      "path": "textures\\game_art.aseprite",
       "name": "GameAtlas"
     }
   ],
@@ -23,6 +23,10 @@
     {
       "path": "audio\\laser gun.wav",
       "name": "Laser"
+    },
+    {
+      "path": "audio\\explosion.wav",
+      "name": "Explosion"
     }
   ]
 }

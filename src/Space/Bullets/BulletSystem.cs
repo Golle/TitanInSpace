@@ -2,7 +2,6 @@ using Space.Game;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
 using Titan.ECS;
-using Titan.ECS.Entities;
 using Titan.ECS.Queries;
 using Titan.Systems;
 
@@ -31,7 +30,7 @@ internal struct BulletSystem : ISystem
 
     public void Update()
     {
-        if (_gameState.Get().CurrentState == GameStateTypes.EndGame)
+        if (_gameState.Get().CurrentState == GameStateTypes.EndGame || _gameState.Get().CurrentState == GameStateTypes.LevelCompleted)
         {
             foreach (ref readonly var entity in _query)
             {

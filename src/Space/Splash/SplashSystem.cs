@@ -78,19 +78,6 @@ internal struct SplashSystem : ISystem
             _gameStartEvent.Send(new GameStartEvent());
         }
 
-        if (_input.IsKeyPressed(KeyCode.Q))
-        {
-            _audioManager.Stop(_music);
-        }
-
-        if (_input.IsKeyPressed(KeyCode.F))
-        {
-            _audioManager.Pause(_music);
-        }
-        if (_input.IsKeyPressed(KeyCode.G))
-        {
-            _audioManager.Resume(_music);
-        }
     }
     public bool ShouldRun() => _gameState.Get().CurrentState is GameStateTypes.Splash;
 }

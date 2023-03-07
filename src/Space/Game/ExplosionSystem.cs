@@ -2,8 +2,10 @@ using System.Numerics;
 using Space.Assets;
 using Space.Events;
 using Titan.Assets;
+using Titan.Audio;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Resources;
+using Titan.Core;
 using Titan.ECS;
 using Titan.ECS.Queries;
 using Titan.Events;
@@ -16,15 +18,18 @@ internal struct ExplosionSystem : ISystem
     private EntityManager _entityManager;
     private ComponentManager _componentManager;
     private AssetsManager _assetsManager;
+    private AudioManager _audioManager;
     private MutableStorage<Sprite> _sprite;
     private MutableStorage<ExplosionComponent> _explosion;
     private MutableResource<TimeStep> _time;
     private EventsReader<PlayerHitEvent> _playerHit;
     private EventsReader<InvaderDestroyedEvent> _invaderDestroyed;
     private EntityQuery _query;
+    private Handle<Asset> _explosionSound;
 
     private const float KeyFrameTime = 0.05f;
     private static readonly int FrameCount = SpriteRectangles.Explosion.Length;
+
 
 
     public void Init(in SystemInitializer init)
@@ -32,6 +37,7 @@ internal struct ExplosionSystem : ISystem
         _entityManager = init.GetEntityManager();
         _componentManager = init.GetComponentManager();
         _assetsManager = init.GetAssetsManager();
+        _audioManager = init.GetAudioManager();
         _sprite = init.GetMutableStorage<Sprite>();
         _explosion = init.GetMutableStorage<ExplosionComponent>();
         _time = init.GetMutableResource<TimeStep>();
@@ -42,6 +48,10 @@ internal struct ExplosionSystem : ISystem
 
     public void Update()
     {
+        if (_explosionSound.IsInvalid)
+        {
+            _explosionSound = _assetsManager.Load(AssetRegistry.Manifest.Textures.Explosion);
+        }
         var deltaTimeS = _time.Get().DeltaTimeSecondsF;
         foreach (ref readonly var entity in _query)
         {
@@ -68,6 +78,7 @@ internal struct ExplosionSystem : ISystem
             ref readonly var invaderSpriteRectangle = ref SpriteRectangles.Invaders[(int)@event.Type][0];
             var offset = new Vector2(invaderSpriteRectangle.Width, invaderSpriteRectangle.Height) / 2f;
             SpawnExplosion(@event.Position + offset);
+            _audioManager.PlayOnce(_explosionSound, PlaybackSettings.Default with { Frequency = 1.6f, Volume = 0.8f });
         }
 
         foreach (ref readonly var @event in _playerHit)
@@ -75,6 +86,7 @@ internal struct ExplosionSystem : ISystem
             var width = SpriteRectangles.Player.Width;
             var offset = new Vector2(width, 0) / 2f;
             SpawnExplosion(@event.Position + offset);
+            _audioManager.PlayOnce(_explosionSound, PlaybackSettings.Default with { Frequency = 1.2f, Volume = 1f });
         }
     }
 
@@ -94,6 +106,6 @@ internal struct ExplosionSystem : ISystem
 
     }
     public bool ShouldRun()
-        => _query.HasEntities() || _invaderDestroyed.HasEvents();
+        => _query.HasEntities() || _invaderDestroyed.HasEvents() || _playerHit.HasEvents();
 }
 

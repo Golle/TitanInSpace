@@ -33,7 +33,6 @@ internal struct InvaderDamageSystem : ISystem
             {
                 _entityManager.Destroy(@event.Source.Entity);
                 _entityManager.Destroy(@event.Target.Entity);
-
                 _gameState.Get().Score += 10;
                 _invaderDestroyed.Send(new InvaderDestroyedEvent
                 {

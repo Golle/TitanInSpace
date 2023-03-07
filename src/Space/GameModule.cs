@@ -37,6 +37,7 @@ internal struct GameModule : IModule
             .AddSystem<GameOverSystem>()
             .AddSystem<GameStartupSystem>()
             .AddSystem<GameCameraSystem>()
+            .AddSystem<ScoreSystem>()
             .AddSystem<LevelCompletedSystem>()
 
             .AddSystem<ShieldSpawnSystem>()

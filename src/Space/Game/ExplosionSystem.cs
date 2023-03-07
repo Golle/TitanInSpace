@@ -77,7 +77,7 @@ internal struct ExplosionSystem : ISystem
         {
             ref readonly var invaderSpriteRectangle = ref SpriteRectangles.Invaders[(int)@event.Type][0];
             var offset = new Vector2(invaderSpriteRectangle.Width, invaderSpriteRectangle.Height) / 2f;
-            SpawnExplosion(@event.Position + offset);
+            SpawnExplosion(@event.Position);
             _audioManager.PlayOnce(_explosionSound, PlaybackSettings.Default with { Frequency = 1.6f, Volume = 0.8f });
         }
 

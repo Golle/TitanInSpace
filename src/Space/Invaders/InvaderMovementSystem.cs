@@ -18,6 +18,7 @@ internal enum InvaderMoveDirection
 internal struct InvaderMovementSystem : ISystem
 {
     private MutableStorage<Transform2D> _transform;
+    private ReadOnlyStorage<InvaderComponent> _invaders;
     private ReadOnlyResource<TimeStep> _timestep;
     private ReadOnlyResource<GameState> _gameState;
     private EntityQuery _query;
@@ -29,6 +30,7 @@ internal struct InvaderMovementSystem : ISystem
         _query = init.CreateQuery(new EntityQueryArgs().With<Transform2D>().With<InvaderComponent>());
         _timestep = init.GetReadOnlyResource<TimeStep>();
         _gameState = init.GetReadOnlyResource<GameState>();
+        _invaders = init.GetReadOnlyStorage<InvaderComponent>();
     }
 
     public void Update()
@@ -64,18 +66,18 @@ internal struct InvaderMovementSystem : ISystem
         };
 
         //NOTE(Jens): this is not a good solution, we should have a constant for this
-        var invaderWidth = SpriteRectangles.Invaders[0][0].Width;
+
         var nextDirection = _direction;
         foreach (ref readonly var entity in _query)
         {
             ref var transform = ref _transform[entity];
             transform.Position += delta;
-
-            if (_direction == InvaderMoveDirection.Right && transform.Position.X + invaderWidth >= boardSize.Width)
+            var halfWidth = _invaders[entity].InvaderWidth / 2f;
+            if (_direction == InvaderMoveDirection.Right && transform.Position.X + halfWidth >= boardSize.Width)
             {
                 nextDirection = InvaderMoveDirection.DownLeft;
             }
-            else if (_direction == InvaderMoveDirection.Left && transform.Position.X <= 0)
+            else if (_direction == InvaderMoveDirection.Left && transform.Position.X - halfWidth <= 0)
             {
                 nextDirection = InvaderMoveDirection.DownRight;
             }

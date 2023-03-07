@@ -2,6 +2,7 @@ using Space.Events;
 using Space.Game;
 using Titan.BuiltIn.Components;
 using Titan.BuiltIn.Events;
+using Titan.Core.Logging;
 using Titan.ECS;
 using Titan.Events;
 using Titan.Systems;
@@ -15,6 +16,7 @@ internal struct InvaderDamageSystem : ISystem
     private MutableResource<GameState> _gameState;
     private EventsWriter<InvaderDestroyedEvent> _invaderDestroyed;
     private ReadOnlyStorage<Transform2D> _transform;
+    private ReadOnlyStorage<InvaderComponent> _invader;
 
     public void Init(in SystemInitializer init)
     {
@@ -23,6 +25,7 @@ internal struct InvaderDamageSystem : ISystem
         _gameState = init.GetMutableResource<GameState>();
         _invaderDestroyed = init.GetEventsWriter<InvaderDestroyedEvent>();
         _transform = init.GetReadOnlyStorage<Transform2D>();
+        _invader = init.GetReadOnlyStorage<InvaderComponent>();
     }
 
     public void Update()
@@ -33,10 +36,9 @@ internal struct InvaderDamageSystem : ISystem
             {
                 _entityManager.Destroy(@event.Source.Entity);
                 _entityManager.Destroy(@event.Target.Entity);
-                _gameState.Get().Score += 10;
                 _invaderDestroyed.Send(new InvaderDestroyedEvent
                 {
-                    Type = InvaderType.Basic,
+                    Type = _invader[@event.Target.Entity].Type,
                     Position = _transform[@event.Target.Entity].GetWorldPosition()
                 });
             }

@@ -2,6 +2,15 @@ using Titan.Core.Maths;
 
 namespace Space;
 
+internal static class GameConstants
+{
+
+    public const uint InvaderWidth = 12;
+    public const uint InvaderHalfWidth = InvaderWidth / 2;
+    public const uint InvaderBlockWidth = 18;
+    public const uint InvaderBlockHeight = 18;
+}
+
 public static class ColorPalette
 {
     public static readonly Color Darkest = Color.FromRGB(0x22223b);
@@ -29,9 +38,14 @@ internal static class SpriteRectangles
         {
             new(32, 0, 8, 8),
             new(48, 0, 8, 8)
+        },
+        new Rectangle[]
+        {
+            new(64, 0, 14, 12),
+            new(80, 0, 14, 12)
         }
     };
-    
+
     public static readonly Rectangle Bullet1_0 = new(0, 64, 2, 9);
 
     public static readonly Rectangle[] Shields = {

@@ -84,7 +84,8 @@ internal struct PlayerShootingSystem : ISystem
         {
             Size = new SizeF(4, 10),
             Category = CollisionCategories.Bullet,
-            CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Invader,
+            Pivot = new Vector2(0.5f)
         });
         _componentManager.AddComponent<BulletComponent>(bullet, default);
         _audioManager.PlayOnce(_laser, PlaybackSettings.Default with{Frequency = 2f, Volume = 1f});

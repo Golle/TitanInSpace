@@ -94,7 +94,8 @@ internal struct InvaderShootingSystem : ISystem
         {
             Size = new SizeF(4, 10),
             Category = CollisionCategories.Bullet,
-            CollidesWith = CollisionCategories.Shield | CollisionCategories.Player
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Player,
+            Pivot = new Vector2(0.5f)
         });
         _componentManager.AddComponent(bullet, new BulletComponent { Down = true });
         _audioManager.PlayOnce(_laser, PlaybackSettings.Default with { Volume = 0.3f, Frequency = 3f});

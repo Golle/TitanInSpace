@@ -7,9 +7,11 @@ namespace Space.Invaders;
 
 internal enum InvaderType
 {
-    Basic = 0,
-    Advanced = 1,
-    Spaceship = 2
+    // These values are indices in the sprite rectangles
+    Advanced = 0,
+    Super = 1,
+    Basic = 2,
+    Spaceship = 3
 }
 
 internal struct InvaderAnimationSystem : ISystem

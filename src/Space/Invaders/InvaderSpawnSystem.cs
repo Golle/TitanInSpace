@@ -53,36 +53,43 @@ internal struct InvaderSpawnSystem : ISystem
         _enemyContainer = _entityManager.Create();
         _componentsManager.AddComponent(_enemyContainer, Transform2D.Default); //NOTE(Jens): Workaround for entity tracking in Sparse Component pools.. 
 
-        const uint invaderBlockSize = 18u;
-        const uint invaderBlockHeight = 18u;
-        const uint invaderWidth = 12;
-        const uint invaderHalfSize = invaderWidth / 2;
         var boardWidth = _gameState.Get().BoardSize.Width;
-        var offsetX = (boardWidth - gameState.InvaderColumns * invaderBlockSize + invaderHalfSize) / 2f;
+        var offsetX = (boardWidth - gameState.InvaderColumns * GameConstants.InvaderBlockWidth + GameConstants.InvaderHalfWidth) / 2f;
         const uint offsetY = 220;
+
+
 
         for (var row = 0u; row < gameState.InvaderRows; ++row)
         {
+            var type = row switch
+            {
+                0 => InvaderType.Super,
+                1 or 2 => InvaderType.Advanced,
+                _ => InvaderType.Basic
+            };
             for (var col = 0u; col < gameState.InvaderColumns; ++col)
             {
-                SpawnInvader(offsetX + col * invaderBlockSize, offsetY - row * invaderBlockHeight, gameState);
+                SpawnInvader(type, offsetX + col * GameConstants.InvaderBlockWidth, offsetY - row * GameConstants.InvaderBlockHeight, gameState);
             }
         }
     }
 
-    private void SpawnInvader(float x, float y, in GameState gameState)
+    private void SpawnInvader(InvaderType type, float x, float y, in GameState gameState)
     {
         //NOTE(Jens): we need to rework how this works to support different enemy types
         var entity = _entityManager.Create();
+        ref readonly var spriteRectangle = ref SpriteRectangles.Invaders[(int)type][0];
+
         _componentsManager.AddComponent(entity, Transform2D.Default with
         {
             Position = new(x, y)
         });
+
         _componentsManager.AddComponent(entity, Sprite.Default with
         {
             Asset = _assetsManager.Load(AssetRegistry.Manifest.Textures.GameAtlas),
-            SourceRect = SpriteRectangles.Invaders[0][0],
-            Pivot = new Vector2(0),
+            SourceRect = spriteRectangle,
+            //Pivot = Vector2.Zero,
             Color = Random.Shared.Next(0, 3) switch
             {
                 0 => ColorPalette.Lighter,
@@ -93,13 +100,15 @@ internal struct InvaderSpawnSystem : ISystem
         _componentsManager.AddComponent(entity, new InvaderComponent
         {
             ShootingCooldown = gameState.InvaderMinShootingCooldown,
-            InvaderWidth = SpriteRectangles.Invaders[0][0].Width
+            InvaderWidth = spriteRectangle.Width,
+            Type = type
         });
         _componentsManager.AddComponent(entity, new BoxCollider2D
         {
-            Size = new(SpriteRectangles.Invaders[0][0].Width, SpriteRectangles.Invaders[0][0].Height),
+            Size = new(spriteRectangle.Width, spriteRectangle.Height),
             Category = CollisionCategories.Invader,
-            CollidesWith = CollisionCategories.Shield | CollisionCategories.Player
+            CollidesWith = CollisionCategories.Shield | CollisionCategories.Player,
+            Pivot = new Vector2(0.5f)
         });
         _entityManager.Attach(_enemyContainer, entity);
     }

@@ -30,7 +30,7 @@ internal struct BulletSystem : ISystem
 
     public void Update()
     {
-        if (_gameState.Get().CurrentState == GameStateTypes.EndGame || _gameState.Get().CurrentState == GameStateTypes.LevelCompleted)
+        if (_gameState.Get().CurrentState is GameStateTypes.EndGame or GameStateTypes.LevelCompleted)
         {
             foreach (ref readonly var entity in _query)
             {

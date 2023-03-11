@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\TitanEngine\src\Titan\Titan.csproj" />
+    <ProjectReference Include="..\..\..\Titan\src\Titan\Titan.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(ConsoleLogging)' == 'true'">

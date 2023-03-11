@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Space", "src\Space\Space.cs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{4B4D0ACF-C064-4CBD-AE6F-1FE08D1328D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan", "..\TitanEngine\src\Titan\Titan.csproj", "{B7AB2573-1A8B-4776-BDD5-5EBD88EDDE0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan", "..\Titan\src\Titan\Titan.csproj", "{B7AB2573-1A8B-4776-BDD5-5EBD88EDDE0E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Core", "..\TitanEngine\src\Titan.Core\Titan.Core.csproj", "{7A7671E5-A8C9-47D8-8EE7-91F258C9915D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Core", "..\Titan\src\Titan.Core\Titan.Core.csproj", "{7A7671E5-A8C9-47D8-8EE7-91F258C9915D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Platform", "..\TitanEngine\src\Titan.Platform\Titan.Platform.csproj", "{AD0FB963-3F1C-4070-8143-8964D0D19260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Platform", "..\Titan\src\Titan.Platform\Titan.Platform.csproj", "{AD0FB963-3F1C-4070-8143-8964D0D19260}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Tools.Core", "..\TitanEngine\src\Titan.Tools.Core\Titan.Tools.Core.csproj", "{630FA5E2-F38B-4F89-A5BE-8D1B0FB4A22C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titan.Tools.Core", "..\Titan\src\Titan.Tools.Core\Titan.Tools.Core.csproj", "{630FA5E2-F38B-4F89-A5BE-8D1B0FB4A22C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,7 +16,7 @@ const bool UseRawAssets = true;
 
 var devAssetFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../assets");
 var devPakFolder = Path.Combine(devAssetFolder, "bin");
-var devEngineFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../../TitanEngine/");
+var devEngineFolder = Path.GetFullPath($"{AppContext.BaseDirectory}../../../../../../Engine/");
 var devConfig = new AssetsDevConfiguration(devAssetFolder, devPakFolder, devEngineFolder, UseRawAssets);
 
 #else

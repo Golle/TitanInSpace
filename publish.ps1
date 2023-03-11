@@ -8,4 +8,4 @@ if($LASTEXITCODE -ne 0){
 }
 
 Copy-Item $PSScriptRoot/assets/bin/manifest.titanpak $out -Force
-Copy-Item $PSScriptRoot/../TitanEngine/assets/bin/builtin.titanpak $out -Force
+Copy-Item $PSScriptRoot/../Titan/assets/bin/builtin.titanpak $out -Force
